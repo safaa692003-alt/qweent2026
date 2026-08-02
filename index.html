@@ -1,0 +1,2316 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام توزيع المطبقين - وزارة التربية</title>
+    <style>
+        :root {
+            --primary-blue: #003366;
+            --nav-blue: #4a90e2;
+            --gold-yellow: #f1c40f;
+            --bg-gray: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-dark: #333333;
+            --border-color: #dddddd;
+            --danger-red: #d32f2f;
+            --full-red-bg: #ffcdd2;
+            --success-green: #27ae60;
+            --principal-orange: #d35400;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header & Nav */
+        header {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 1rem 15rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid #002244;
+        }
+
+        .header-title h1 {
+            font-size: 1.2rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .header-title p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* تعديل تنسيق الشعار ليكون صورة */
+        .logo-placeholder {
+            width: 90px;
+            height: 90px;
+            background: transparent;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .logo-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        nav {
+            background-color: #002244;
+            padding: 0.8rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            background-color: var(--nav-blue);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        nav button:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+
+        nav button.active {
+            background-color: var(--gold-yellow);
+            color: var(--primary-blue);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        nav button.principal-btn.active {
+            background-color: var(--principal-orange);
+            color: white;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            width: 100%;
+        }
+
+        .page-section {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Cards & Forms */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .note-box {
+            background-color: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+
+        .note-box strong {
+            color: var(--primary-blue);
+        }
+
+        .alert-box {
+            background-color: #ffebee;
+            border: 1px solid #ffcdd2;
+            color: #c62828;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 250px;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-group label {
+            background-color: var(--gold-yellow);
+            color: var(--primary-blue);
+            padding: 0.8rem 1.5rem;
+            font-weight: bold;
+            min-width: 140px;
+            text-align: center;
+            border-radius: 4px;
+            margin-left: 1rem;
+            white-space: nowrap;
+        }
+
+        input,
+        select {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            background: white;
+            font-weight: bold;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--nav-blue);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+
+        option.school-full {
+            background-color: var(--full-red-bg) !important;
+            color: var(--danger-red) !important;
+            font-weight: 900;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.8rem 2.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-gold {
+            background-color: var(--gold-yellow);
+            color: var(--primary-blue);
+        }
+
+        .btn-blue {
+            background-color: var(--nav-blue);
+            color: white;
+        }
+
+        .btn-green {
+            background-color: var(--success-green);
+            color: white;
+        }
+
+        .btn-red {
+            background-color: var(--danger-red);
+            color: white;
+        }
+
+        .btn-purple {
+            background-color: #8e44ad;
+            color: white;
+        }
+
+        .btn-orange {
+            background-color: var(--principal-orange);
+            color: white;
+        }
+
+        .btn:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            min-width: 800px;
+        }
+
+        th {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 1rem;
+            text-align: right;
+            font-weight: bold;
+        }
+
+        td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #eee;
+            text-align: right;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f8ff;
+        }
+
+        /* Login Box */
+        .login-card {
+            max-width: 500px;
+            margin: 3rem auto;
+            text-align: center;
+        }
+
+        .login-header {
+            background: var(--primary-blue);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px 8px 0 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .login-body {
+            border: 1px solid var(--border-color);
+            border-top: none;
+            padding: 2rem;
+            border-radius: 0 0 8px 8px;
+            background: white;
+        }
+
+        .login-input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+
+        .login-input-group label {
+            background: var(--nav-blue);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            min-width: 120px;
+        }
+
+        .login-input-group input {
+            flex: 1;
+        }
+
+        /* Review Section */
+        .review-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .review-item {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dashed #ddd;
+            padding: 0.5rem 0;
+        }
+
+        .review-label {
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+
+        .review-value {
+            color: #555;
+        }
+
+        footer {
+            background-color: var(--primary-blue);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: auto;
+            font-size: 0.9rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* ==========================================
+           PRINT STYLES
+           ========================================== */
+        @media print {
+            @page {
+                size: landscape;
+                margin: 1cm;
+            }
+
+            body * {
+                visibility: hidden;
+            }
+
+            #principal-results,
+            #principal-results * {
+                visibility: visible;
+            }
+
+            #principal-results {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                display: block !important;
+            }
+
+            #principal-results>.card {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+                margin: 0;
+                max-width: 100%;
+                background: transparent;
+            }
+
+            .print-header {
+                visibility: visible !important;
+                display: flex !important;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 2px solid #000;
+                padding-bottom: 10px;
+                margin-bottom: 20px;
+                font-size: 12pt;
+            }
+
+            .print-header div {
+                text-align: center;
+            }
+
+            .print-header .center-text {
+                font-size: 14pt;
+                font-weight: 900;
+            }
+
+            .print-footer {
+                visibility: visible !important;
+                display: block !important;
+                text-align: center;
+                border-top: 1px solid #000;
+                padding-top: 10px;
+                margin-top: 20px;
+                font-size: 10pt;
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+            }
+
+            h2.print-title {
+                color: #000;
+                font-size: 14pt;
+                margin: 20px 0 10px 0;
+                text-align: center;
+                text-decoration: underline;
+            }
+
+            .table-container {
+                overflow: visible !important;
+                border: none;
+                margin-top: 5px;
+            }
+
+            table {
+                font-size: 10pt;
+                width: 100%;
+                border: 1px solid #000;
+                page-break-inside: avoid;
+            }
+
+            th {
+                background-color: #333 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                border: 1px solid #000;
+                padding: 5px;
+            }
+
+            td {
+                border: 1px solid #000;
+                padding: 5px;
+            }
+
+            tr:nth-child(even) {
+                background-color: #f2f2f2 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .print-table-wrapper:first-of-type {
+                page-break-after: always;
+                margin-bottom: 0;
+            }
+
+            .print-table-wrapper:last-of-type {
+                page-break-before: always;
+                margin-top: 20px;
+            }
+
+            .no-print,
+            .btn,
+            .alert-box,
+            .note-box {
+                display: none !important;
+            }
+
+            input[type="text"] {
+                border: none !important;
+                background: transparent !important;
+                padding: 0 !important;
+                font-weight: bold;
+                width: 100% !important;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .form-group label {
+                min-width: 100%;
+                margin-left: 0;
+                margin-bottom: 0.5rem;
+            }
+
+            .review-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ==========================================
+           SUCCESS OVERLAY
+           ========================================== */
+        #success-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        #success-overlay.show {
+            display: flex;
+        }
+
+        .success-card {
+            background: white;
+            border-radius: 16px;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            max-width: 460px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2.8rem;
+            box-shadow: 0 8px 25px rgba(39, 174, 96, 0.4);
+            animation: bounceIn 0.6s 0.2s both;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0);
+            }
+
+            60% {
+                transform: scale(1.15);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .success-title {
+            font-size: 1.6rem;
+            color: #27ae60;
+            margin-bottom: 0.8rem;
+            font-weight: bold;
+        }
+
+        .success-msg {
+            color: #555;
+            font-size: 1rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        .success-msg strong {
+            color: var(--primary-blue);
+        }
+
+        .btn-new-student {
+            background: linear-gradient(135deg, var(--primary-blue), var(--nav-blue));
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 51, 102, 0.3);
+        }
+
+        .btn-new-student:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 51, 102, 0.4);
+        }
+
+        .sent-name-display {
+            background: #f0f7ff;
+            border: 1px solid #bbdefb;
+            border-radius: 8px;
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-blue);
+            font-size: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Success Overlay -->
+    <div id="success-overlay">
+        <div class="success-card">
+            <div class="success-icon">✓</div>
+            <div class="success-title">تم الإرسال بنجاح!</div>
+            <div class="sent-name-display" id="sent-student-name"></div>
+            <div class="success-msg">
+                تم حفظ معلوماتك وخياراتك في قاعدة البيانات.<br>
+                اضغط على الزر أدناه للبدء مع <strong>طالب جديد</strong>
+            </div>
+            <button class="btn-new-student" onclick="startNewStudent()">
+                🗑️ تصفير وبدء مستخدم جديد
+            </button>
+        </div>
+    </div>
+
+    <header>
+        <div class="header-title">
+            <h1>وزارة التربية</h1>
+            <p>مديرية تربية المثنى</p>
+        </div>
+
+        <!-- تم استبدال كلمة شعار بالصورة المرفقة -->
+        <div class="logo-placeholder">
+            <img src="logo1.png" alt="شعار النظام">
+        </div>
+
+        <div class="header-title" style="text-align: left;">
+            <h1>قسم الإعداد والتدريب</h1>
+            <p>شعبــــــة المعــاهــــد<p>
+        </div>
+    </header>
+
+    <nav id="main-nav">
+        <button onclick="window.location.href='universities.html'" style="background-color: var(--gold-yellow); color: var(--primary-blue);">تواصل الجامعات</button>
+        <button onclick="showPage('student-form')" class="active">معلومات الطالب</button>
+        <button onclick="showPage('school-selection')">اختيار المدارس</button>
+        <button onclick="showPage('review-page')">المراجعة</button>
+        <button onclick="showPage('admin-login')">لوحة التحكم</button>
+        <button onclick="showPage('principal-login')" class="principal-btn">دخول مدير المدرسة</button>
+    </nav>
+
+    <main>
+        <!-- صفحة معلومات الطالب -->
+        <section id="student-form" class="page-section active">
+            <div class="card">
+                <div class="note-box">
+                    <strong>ملاحظة على جميع الطلبة متابعة التالي :</strong><br>
+                    1 - تدقيق اسماء المدارس الثلاث التي ستختارونها وذلك لان مبدا التوزيع الالكتروني<br>
+                    2 - سيقسم المطبقين بناء على الطاقة الاستيعابية للمدارس<br>
+                    3 -  سوف لن يكون هناك اي تغيير ولاي سبب كان<br>
+                    4 - يرجى التركيز على اسماء المدارس الثلاث وليس مدرسة واحدة
+                </div>
+                <div id="form-alert" class="alert-box"></div>
+                <div class="form-row">
+                    <div class="form-group"><label>الاسم الثلاثي</label><input type="text" id="student-name"
+                            placeholder="أدخل الاسم الرباعي"></div>
+                    <div class="form-group"><label>الكود</label><input type="text" id="student-code"
+                            placeholder="أدخل الكود الجامعي"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>الجامعة</label>
+                        <select id="student-university" onchange="toggleOtherUniversity()">
+                            <option value="">اختر</option>
+                            <option value="جامعة المثنى">جامعة المثنى</option>
+                            <option value="ساوة الاهلية">ساوة الاهلية</option>
+                            <option value="الصادق الاهلية">الصادق الاهلية</option>
+                            <option value="خارج المحافظة">خارج المحافظة</option>
+                        </select>
+                    </div>
+                    <div class="form-group hidden" id="other-univ-group">
+                        <label>اسم الجامعة</label>
+                        <input type="text" id="student-other-university" placeholder="اكتب اسم الجامعة هنا">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>نوع الدراسة</label>
+                        <select id="study-type">
+                            <option value="">اختر</option>
+                            <option value="صباحي">صباحي</option>
+                            <option value="مسائي">مسائي</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>الكلية</label>
+                        <select id="student-college" onchange="updateDepartments()">
+                            <option value="">اختر الكلية</option>
+                            <option value="التربية الاساسية">التربية الاساسية</option>
+                            <option value="التربية الانسانية">التربية الانسانية</option>
+                            <option value="التربية العلوم الصرفة">التربية العلوم الصرفة</option>
+                            <option value="التربية البدنية">التربية البدنية</option>
+                            <option value="التربية - ساوة">التربية - ساوة</option>
+                            <option value="التربية - الصادق">التربية - الصادق</option>
+                            <option value="الفنون الجميلة">الفنون الجميلة</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>القطاع</label>
+                        <select id="student-sector">
+                            <option value="">اختر القطاع</option>
+                            <option value="السماوة">السماوة</option>
+                            <option value="الخضر">الخضر</option>
+                            <option value="الرميثة">الرميثة</option>
+                            <option value="الوركاء">الوركاء</option>
+                            <option value="السوير">السوير</option>
+                            <option value="الكرامة">الكرامة</option>
+                            <option value="الهلال">الهلال</option>
+                            <option value="المجد">المجد</option>
+                            <option value="النجمي">النجمي</option>
+                            <option value="السلمان">السلمان</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>القسم</label>
+                        <select id="student-department">
+                            <option value="">يرجى اختيار الكلية أولاً</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>الجنس</label>
+                        <select id="student-gender">
+                            <option value="">اختر</option>
+                            <option value="ذكر">ذكر</option>
+                            <option value="أنثى">أنثى</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="btn-container">
+                    <button class="btn btn-blue" onclick="saveStudentInfo()">حفظ</button>
+                    <button class="btn btn-gold" onclick="validateAndGoToSchools()">التالي</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- صفحة اختيار المدارس -->
+        <section id="school-selection" class="page-section">
+            <div class="card">
+                <div class="note-box">
+                    <strong>ملاحظة :</strong> لاختيار المدارس عشوائيا لانك هنا ستتحمل مسؤولية الاختيار وعلى اساسها سيقوم
+                    البرنامج بتوزيعكم على المدارس
+                      <strong>//ملاحظة هامة جدا:</strong> //سنلاحظ ظهور المدارس الابتدائية والمتوسطة والثانوية والاعدادية والمعهد ((فقط لطلبة اقسام اللغة الانكليزية)) بسبب الاعداد الكبيرة
+                </div>
+                <div id="school-alert" class="alert-box"></div>
+                <div class="form-row"
+                    style="justify-content: center; flex-direction: column; align-items: center; gap: 1.5rem;">
+                    <div class="form-group" style="width: 100%; max-width: 600px;">
+                        <label style="background: var(--gold-yellow);">الخيار الاول</label>
+                        <select id="school-1" onchange="checkDuplicateSelection()">
+                            <option value="">اختر المدرسة</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="width: 100%; max-width: 600px;">
+                        <label style="background: var(--gold-yellow);">الخيار الثاني</label>
+                        <select id="school-2" onchange="checkDuplicateSelection()">
+                            <option value="">اختر المدرسة</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="width: 100%; max-width: 600px;">
+                        <label style="background: var(--gold-yellow);">الخيار الثالث</label>
+                        <select id="school-3" onchange="checkDuplicateSelection()">
+                            <option value="">اختر المدرسة</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="btn-container">
+                    <button class="btn btn-blue" onclick="showPage('student-form')">مراجعة السابق</button>
+                    <button class="btn btn-gold" onclick="validateAndProceed()">التالي</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- صفحة المراجعة -->
+        <section id="review-page" class="page-section">
+            <div class="card">
+                <div class="note-box">راجع معلوماتك بدقة قبل الإرسال النهائي</div>
+                <div class="review-grid">
+                    <div>
+                        <div class="review-item"><span class="review-label">الاسم الثلاثي</span><span
+                                class="review-value" id="rev-name">...</span></div>
+                        <div class="review-item"><span class="review-label">الجامعة</span><span class="review-value"
+                                id="rev-univ">...</span></div>
+                        <div class="review-item"><span class="review-label">الكلية</span><span class="review-value"
+                                id="rev-college">...</span></div>
+                        <div class="review-item"><span class="review-label">القسم</span><span class="review-value"
+                                id="rev-dept">...</span></div>
+                        <div class="review-item"><span class="review-label">الكود</span><span class="review-value"
+                                id="rev-code">...</span></div>
+                        <div class="review-item"><span class="review-label">نوع الدراسة</span><span class="review-value"
+                                id="rev-type">...</span></div>
+                        <div class="review-item"><span class="review-label">القطاع</span><span class="review-value"
+                                id="rev-sector">...</span></div>
+                        <div class="review-item"><span class="review-label">الجنس</span><span class="review-value"
+                                id="rev-gender">...</span></div>
+                    </div>
+                    <div>
+                        <div class="review-item"><span class="review-label">الخيار الأول</span><span
+                                class="review-value" id="rev-s1">...</span></div>
+                        <div class="review-item"><span class="review-label">الخيار الثاني</span><span
+                                class="review-value" id="rev-s2">...</span></div>
+                        <div class="review-item"><span class="review-label">الخيار الثالث</span><span
+                                class="review-value" id="rev-s3">...</span></div>
+                        <div style="margin-top: 2rem; text-align: center;">
+                            <button class="btn btn-gold" style="width: 100%;"
+                                onclick="showPage('school-selection')">راجع معلوماتك</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-container">
+                    <button class="btn btn-blue" onclick="showPage('student-form')">العودة للاستماره</button>
+                    <button class="btn btn-green" onclick="submitApplication()">تأكيد وارسال</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- لوحة تحكم الأدمن -->
+        <section id="admin-login" class="page-section">
+            <div class="login-card">
+                <div class="login-header">تسجيل الدخول إلى لوحة التحكم</div>
+                <div class="login-body">
+                    <div id="login-alert" class="alert-box"></div>
+                    <div class="login-input-group">
+                        <label>البريد الإلكتروني</label>
+                        <input type="email" id="admin-email" placeholder="أدخل البريد الإلكتروني" autocomplete="email">
+                    </div>
+                    <div class="login-input-group">
+                        <label>كلمة المرور</label>
+                        <input type="password" id="admin-pass" placeholder="أدخل كلمة المرور" autocomplete="current-password">
+                    </div>
+                    <button id="login-btn" class="btn btn-blue" style="width: 100%; margin-top: 1rem;"
+                        onclick="adminLogin()">دخول</button>
+                    <button class="btn" style="width: 100%; margin-top: 0.5rem; background: transparent; color: var(--nav-blue); border: none; cursor: pointer; font-size: 0.9rem; text-decoration: underline;"
+                        onclick="resetPassword()">نسيت كلمة المرور؟</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="admin-dashboard" class="page-section">
+            <div class="card">
+                <div
+                    style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+                    <h2 style="color:var(--primary-blue);">لوحة التحكم - التقرير التراكمي</h2>
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                        <button class="btn btn-green" onclick="exportToExcel()">excel تقرير تراكمي</button>
+                        <button class="btn btn-blue" style="background-color: #2a5298;" onclick="exportToWord()">word
+                            تقرير تراكمي</button>
+                        <button class="btn btn-gold" onclick="clearAllData()">🗑️ مسح المعلومات</button>
+                        <button class="btn btn-blue" onclick="logoutAdmin()">تسجيل الخروج</button>
+                    </div>
+                </div>
+                <p style="margin-bottom:1rem;">عدد السجلات المدخلة: <span id="total-records"
+                        style="font-weight:bold; color:var(--nav-blue);">0</span></p>
+                <div class="table-container">
+                    <table id="admin-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>الاسم الثلاثي</th>
+                                <th>الكود</th>
+                                <th>الجامعة</th>
+                                <th>الكلية</th>
+                                <th>القسم</th>
+                                <th>القطاع</th>
+                                <th>نوع الدراسة</th>
+                                <th>الجنس</th>
+                                <th>الخيار الاول</th>
+                                <th>الخيار الثاني</th>
+                                <th>الخيار الثالث</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div
+                        style="margin-top: 3rem; display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+                        <h2 style="color:var(--primary-blue);">سجلات المباشرة والانفكاك (الردود الواردة من المدارس)</h2>
+                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                            <button class="btn btn-green" onclick="exportDatesToExcel()">excel جدول التواريخ</button>
+                            <button class="btn btn-gold" onclick="clearDatesData()">🗑️ مسح التواريخ</button>
+                        </div>
+                    </div>
+                    <p style="margin-bottom:1rem;">عدد السجلات المدخلة: <span id="total-dates-records"
+                            style="font-weight:bold; color:var(--nav-blue);">0</span></p>
+                    <div class="table-container">
+                        <table id="admin-dates-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>اسم المدرسة</th>
+                                    <th>اسم الطالب الرباعي</th>
+                                    <th>الجامعة</th>
+                                    <th>الكلية</th>
+                                    <th>القسم</th>
+                                    <th>نوع الدراسة</th>
+                                    <th>تاريخ المباشرة</th>
+                                    <th>تاريخ الانفكاك</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+        </section>
+        <!-- صفحة دخول مدير المدرسة -->
+        <section id="principal-login" class="page-section">
+            <div class="login-card">
+                <div class="login-header" style="background: var(--principal-orange);">تسجيل الدخول كمدير مدرسة</div>
+                <div class="login-body">
+                    <p style="margin-bottom: 1.5rem; color: #666;">أدخل الكود الخاص بمدرستك لعرض قائمة الطلاب المسجلين
+                        فيها</p>
+                    <div id="principal-alert" class="alert-box"></div>
+                    <div class="login-input-group">
+                        <label style="background: var(--principal-orange);">كود المدرسة</label>
+                        <input type="text" id="principal-code-input">
+                    </div>
+                    <button class="btn btn-orange" style="width: 100%; margin-top: 1rem;"
+                        onclick="principalSearch()">عرض القائمة</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- صفحة نتائج مدير المدرسة -->
+        <section id="principal-results" class="page-section">
+            <div class="card">
+                <div class="print-header no-print" style="display:none;">
+                    <div style="width: 30%;">
+                        <p>وزارة التربية</p>
+                        <p>مديرية تربية المثنى</p>
+                    </div>
+                    <div class="center-text" style="width: 40%;">
+                        <p>نظام توزيع المطبقين</p>
+                        <p id="print-school-name-header"></p>
+                    </div>
+                    <div style="width: 30%;">
+                        <p>قسم الإعداد والتدريب</p>
+                    </div>
+                </div>
+
+                <div class="no-print"
+                    style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:1rem;">
+                    <div>
+                        <h2 id="principal-school-title" style="color: var(--principal-orange);"></h2>
+                        <p id="principal-count" style="color: #666; margin-top: 0.5rem;"></p>
+                    </div>
+                    <button class="btn btn-gold" onclick="showPage('principal-login')">🔙 عودة للبحث</button>
+                </div>
+
+                <div class="print-table-wrapper">
+                    <h2 class="print-title">📋 جدول المطبقين حسب الخيارات</h2>
+                    <div class="print-btn-wrapper no-print" style="margin-bottom: 1rem; text-align: center;">
+                        <button class="btn btn-purple" onclick="printTable1()">🖨️ حفظ وطباعة جدول الخيارات</button>
+                    </div>
+                    <div class="table-container">
+                        <table id="principal-table">
+                            <thead>
+                                <tr>
+                                    <th>ت</th>
+                                    <th>اسم الطالب الرباعي</th>
+                                    <th>الجامعة</th>
+                                    <th>الكلية</th>
+                                    <th>القسم</th>
+                                    <th>نوع الدراسة</th>
+                                    <th>الجنس</th>
+                                    <th>الاختيار</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="print-table-wrapper" style="margin-top: 3rem;">
+                    <h2 class="print-title">📅 جدول المباشرة والانفكاك</h2>
+                    <div class="print-btn-wrapper no-print" style="margin-bottom: 1rem; text-align: center;">
+                        <button class="btn btn-green" onclick="saveDatesCumulative()">💾 حفظ تراكمي</button>
+                        <button class="btn btn-orange" onclick="printTable2()">🖨️ حفظ وطباعة جدول المباشرة</button>
+                        <button class="btn btn-blue" onclick="sendDatesToAdmin()">📤 إرسال للإدارة</button>
+                    </div>
+                    <div class="table-container">
+                        <table id="principal-dates-table">
+                            <thead>
+                                <tr>
+                                    <th>ت</th>
+                                    <th>اسم الطالب الرباعي</th>
+                                    <th>الجامعة</th>
+                                    <th>الكلية</th>
+                                    <th>القسم</th>
+                                    <th>نوع الدراسة</th>
+                                    <th>الجنس</th>
+                                    <th>تاريخ المباشرة</th>
+                                    <th>تاريخ الانفكاك</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="print-footer no-print" style="display:none;">
+                    <p>م.م صفاء هادي عبد العالي - مدير قسم الإعداد والتدريب</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>م.م صفاء هادي عبد العالي مدير قسم الاعداد والتدريب</p>
+    </footer>
+
+    <script>
+        // ==========================================
+        // قاعدة بيانات المدارس
+        // ==========================================
+        const SCHOOLS_DB = [
+            // السماوة 1
+            { code: 'A073', name: 'اطفال البراعم', sector: 'السماوة', list: '1' }, { code: 'A074', name: 'اطفال الزنابق', sector: 'السماوة', list: '1' },
+            { code: 'A075', name: 'اطفال السماوة', sector: 'السماوة', list: '1' }, { code: 'A076', name: 'اطفال الشروق', sector: 'السماوة', list: '1' },
+            { code: 'A077', name: 'اطفال العبير', sector: 'السماوة', list: '1' }, { code: 'A078', name: 'الملائكة', sector: 'السماوة', list: '1' },
+            { code: 'A079', name: 'الملاك الصغير', sector: 'السماوة', list: '1' }, { code: 'A080', name: 'النسرين', sector: 'السماوة', list: '1' },
+            { code: 'A081', name: 'الورود', sector: 'السماوة', list: '1' }, { code: 'A082', name: 'جنة المأوى', sector: 'السماوة', list: '1' },
+            { code: 'A083', name: 'روضة اطفال الرونق', sector: 'السماوة', list: '1' }, { code: 'A084', name: 'طيور الجنة', sector: 'السماوة', list: '1' },
+            { code: 'A085', name: 'ابن البيطارللبنين', sector: 'السماوة', list: '1' }, { code: 'A086', name: 'ابن النفيس', sector: 'السماوة', list: '1' },
+            { code: 'A087', name: 'ابن رشد', sector: 'السماوة', list: '1' }, { code: 'A088', name: 'ابن سينا', sector: 'السماوة', list: '1' },
+            { code: 'A089', name: 'ابو حمزه الثمالي', sector: 'السماوة', list: '1' }, { code: 'A090', name: 'ابي فراس', sector: 'السماوة', list: '1' },
+            { code: 'A091', name: 'احرار العراق المختلطة', sector: 'السماوة', list: '1' }, { code: 'A092', name: 'ارض كربلاء', sector: 'السماوة', list: '1' },
+            { code: 'A093', name: 'اسيا بنت مزاحم', sector: 'السماوة', list: '1' }, { code: 'A094', name: 'اشبيلية للبنات', sector: 'السماوة', list: '1' },
+            { code: 'A095', name: 'اغادير', sector: 'السماوة', list: '1' }, { code: 'A096', name: 'اكد للبنين', sector: 'السماوة', list: '1' },
+            { code: 'A097', name: 'الاحسان', sector: 'السماوة', list: '1' }, { code: 'A098', name: 'الاحواز', sector: 'السماوة', list: '1' },
+            { code: 'A099', name: 'الاخلاص ح1', sector: 'السماوة', list: '1' }, { code: 'A100', name: 'الازدهار', sector: 'السماوة', list: '1' },
+            { code: 'A101', name: 'الازل', sector: 'السماوة', list: '1' }, { code: 'A102', name: 'الاستبرق', sector: 'السماوة', list: '1' },
+            { code: 'A103', name: 'الاسراء للبنات', sector: 'السماوة', list: '1' }, { code: 'A104', name: 'الاسماء الحسنى', sector: 'السماوة', list: '1' },
+            { code: 'A105', name: 'الاشراق', sector: 'السماوة', list: '1' }, { code: 'A106', name: 'الاصالة', sector: 'السماوة', list: '1' },
+            { code: 'A107', name: 'الاصمعي', sector: 'السماوة', list: '1' }, { code: 'A108', name: 'الاطياف للبنات', sector: 'السماوة', list: '1' },
+            { code: 'A109', name: 'الافاضة', sector: 'السماوة', list: '1' }, { code: 'A110', name: 'الاقحوان', sector: 'السماوة', list: '1' },
+            { code: 'A111', name: 'الامام الباقر', sector: 'السماوة', list: '1' }, { code: 'A112', name: 'الامام المهدي المنتظر', sector: 'السماوة', list: '1' },
+            { code: 'A113', name: 'الامام الهادي ع', sector: 'السماوة', list: '1' }, { code: 'A114', name: 'الامام علي ( ع)', sector: 'السماوة', list: '1' },
+            { code: 'A115', name: 'الامام موسى الكاظم ع', sector: 'السماوة', list: '1' }, { code: 'A116', name: 'الامل المنتظرلرعاية الايتام', sector: 'السماوة', list: '1' },
+            { code: 'A117', name: 'الانتفاضة', sector: 'السماوة', list: '1' }, { code: 'A118', name: 'الاهرام للبنين', sector: 'السماوة', list: '1' },
+            { code: 'A119', name: 'البادية', sector: 'السماوة', list: '1' }, { code: 'A120', name: 'البسمة للبنين', sector: 'السماوة', list: '1' },
+            { code: 'A121', name: 'البيارق للبنين', sector: 'السماوة', list: '1' }, { code: 'A122', name: 'البيان', sector: 'السماوة', list: '1' },
+            { code: 'A123', name: 'البيت العتيق', sector: 'السماوة', list: '1' }, { code: 'A124', name: 'البينات', sector: 'السماوة', list: '1' },
+            { code: 'A125', name: 'التألق', sector: 'السماوة', list: '1' }, { code: 'A126', name: 'التروية', sector: 'السماوة', list: '1' },
+            { code: 'A127', name: 'التضامن', sector: 'السماوة', list: '1' }, { code: 'A128', name: 'التغريد', sector: 'السماوة', list: '1' },
+            { code: 'A129', name: 'التفاني', sector: 'السماوة', list: '1' }, { code: 'A130', name: 'التقدم', sector: 'السماوة', list: '1' },
+            { code: 'A131', name: 'التقوى للبنين', sector: 'السماوة', list: '1' }, { code: 'A132', name: 'التنعيم', sector: 'السماوة', list: '1' },
+            { code: 'A133', name: 'التهذيب', sector: 'السماوة', list: '1' }, { code: 'A134', name: 'الثقافة للبنين', sector: 'السماوة', list: '1' },
+            { code: 'A135', name: 'الجمهورية للبنات', sector: 'السماوة', list: '1' }, { code: 'A136', name: 'الحبوبي للبنين', sector: 'السماوة', list: '1' },
+            { code: 'A137', name: 'الحديبية التكميلية', sector: 'السماوة', list: '1' }, { code: 'A138', name: 'الحرمين', sector: 'السماوة', list: '1' },
+            { code: 'A139', name: 'الحوراء للبنات', sector: 'السماوة', list: '1' }, { code: 'A140', name: 'الخلود', sector: 'السماوة', list: '1' },
+            { code: 'A141', name: 'الخوارزمي المختلط', sector: 'السماوة', list: '1' }, { code: 'A142', name: 'الخير للبنات', sector: 'السماوة', list: '1' },
+            { code: 'A143', name: 'الخيرات', sector: 'السماوة', list: '1' }, { code: 'A144', name: 'الدرر', sector: 'السماوة', list: '1' },
+            { code: 'A145', name: 'الديار الابتدائية المختلطة', sector: 'السماوة', list: '1' }, { code: 'A146', name: 'الربيع للبنين', sector: 'السماوة', list: '1' },
+            { code: 'A147', name: 'الرتاج', sector: 'السماوة', list: '1' }, { code: 'A148', name: 'الرصافي للبنين', sector: 'السماوة', list: '1' },
+            { code: 'A149', name: 'الركن اليماني', sector: 'السماوة', list: '1' }, { code: 'A150', name: 'الروافد المختلطة', sector: 'السماوة', list: '1' },
+            { code: 'A151', name: 'الزمرد للبنات', sector: 'السماوة', list: '1' }, { code: 'A152', name: 'الزهاوي', sector: 'السماوة', list: '1' },
+            { code: 'A153', name: 'الزينبية للبنين', sector: 'السماوة', list: '1' }, { code: 'A154', name: 'السرور', sector: 'السماوة', list: '1' },
+            { code: 'A155', name: 'السفراء الأربعة', sector: 'السماوة', list: '1' }, { code: 'A156', name: 'السلام للبنين', sector: 'السماوة', list: '1' },
+            { code: 'A157', name: 'السناء', sector: 'السماوة', list: '1' }, { code: 'A158', name: 'السنابل', sector: 'السماوة', list: '1' },
+            { code: 'A159', name: 'السوير', sector: 'السماوة', list: '1' }, { code: 'A160', name: 'السيد ابو القاسم الخوئي', sector: 'السماوة', list: '1' },
+            { code: 'A161', name: 'السيدة فضة ع للبنات', sector: 'السماوة', list: '1' }, { code: 'A162', name: 'الشريف المرتضى', sector: 'السماوة', list: '1' },
+            { code: 'A163', name: 'الشعاع بنين', sector: 'السماوة', list: '1' }, { code: 'A164', name: 'الشعلة', sector: 'السماوة', list: '1' },
+            { code: 'A165', name: 'الشمائل للبنات', sector: 'السماوة', list: '1' }, { code: 'A166', name: 'الشموع', sector: 'السماوة', list: '1' },
+            { code: 'A167', name: 'الشهيد حسن نصر الله', sector: 'السماوة', list: '1' }, { code: 'A168', name: 'الشهيد حمزة مزبان', sector: 'السماوة', list: '1' },
+            { code: 'A169', name: 'الشيماء للبنين', sector: 'السماوة', list: '1' }, { code: 'A170', name: 'الصادق الأمين', sector: 'السماوة', list: '1' },
+            { code: 'A171', name: 'الصفا للبنات', sector: 'السماوة', list: '1' }, { code: 'A172', name: 'الضامن', sector: 'السماوة', list: '1' },
+            { code: 'A173', name: 'الضفاف', sector: 'السماوة', list: '1' }, { code: 'A174', name: 'الطوفان الأقصى', sector: 'السماوة', list: '1' },
+            { code: 'A175', name: 'الظافرون', sector: 'السماوة', list: '1' }, { code: 'A176', name: 'العترة الطاهرة', sector: 'السماوة', list: '1' },
+            { code: 'A177', name: 'العدل', sector: 'السماوة', list: '1' }, { code: 'A178', name: 'العفه للبنات', sector: 'السماوة', list: '1' },
+            { code: 'A179', name: 'العقيلة للبنات', sector: 'السماوة', list: '1' }, { code: 'A180', name: 'العلا للبنين', sector: 'السماوة', list: '1' },
+            { code: 'A181', name: 'العلامة الحلي', sector: 'السماوة', list: '1' }, { code: 'A182', name: 'العهد', sector: 'السماوة', list: '1' },
+            { code: 'A183', name: 'الغاضرية', sector: 'السماوة', list: '1' }, { code: 'A184', name: 'الغافقي للبنين', sector: 'السماوة', list: '1' },
+            { code: 'A185', name: 'الغدير للبنين', sector: 'السماوة', list: '1' }, { code: 'A186', name: 'الغيث', sector: 'السماوة', list: '1' },
+            { code: 'A187', name: 'الف باء', sector: 'السماوة', list: '1' }, { code: 'A188', name: 'الفائزين للبنين', sector: 'السماوة', list: '1' },
+            { code: 'A189', name: 'الفاروق', sector: 'السماوة', list: '1' }, { code: 'A190', name: 'الفرات  المختلطة', sector: 'السماوة', list: '1' },
+            { code: 'A191', name: 'الفراهيدي ح1', sector: 'السماوة', list: '1' }, { code: 'A192', name: 'الفرقان المختلطة', sector: 'السماوة', list: '1' },
+            { code: 'A193', name: 'الفواطم', sector: 'السماوة', list: '1' }, { code: 'A194', name: 'الفيحاء للبنات', sector: 'السماوة', list: '1' },
+            { code: 'A195', name: 'القاسم', sector: 'السماوة', list: '1' }, { code: 'A196', name: 'القحطانية', sector: 'السماوة', list: '1' },
+            { code: 'A197', name: 'القدوة', sector: 'السماوة', list: '1' }, { code: 'A198', name: 'القمر للبنين', sector: 'السماوة', list: '1' },
+            { code: 'A199', name: 'القوافي', sector: 'السماوة', list: '1' }, { code: 'A200', name: 'القيروان', sector: 'السماوة', list: '1' },
+            { code: 'A201', name: 'الكوثر', sector: 'السماوة', list: '1' }, { code: 'A202', name: 'المائدة للبنات', sector: 'السماوة', list: '1' },
+            { code: 'A203', name: 'المأثر للبنات', sector: 'السماوة', list: '1' }, { code: 'A204', name: 'المتنبي للبنات', sector: 'السماوة', list: '1' },
+            { code: 'A205', name: 'المربد', sector: 'السماوة', list: '1' }, { code: 'A206', name: 'المربي المختلطة', sector: 'السماوة', list: '1' },
+            { code: 'A207', name: 'المرتضى', sector: 'السماوة', list: '1' }, { code: 'A208', name: 'المرسلات', sector: 'السماوة', list: '1' },
+            { code: 'A209', name: 'المروه', sector: 'السماوة', list: '1' }, { code: 'A210', name: 'المزدلفة', sector: 'السماوة', list: '1' },
+            { code: 'A211', name: 'المسرة', sector: 'السماوة', list: '1' }, { code: 'A212', name: 'المعالم المختلطة', sector: 'السماوة', list: '1' },
+            { code: 'A213', name: 'المعراج', sector: 'السماوة', list: '1' }, { code: 'A214', name: 'المعرفة', sector: 'السماوة', list: '1' },
+            { code: 'A215', name: 'المعلم الاول', sector: 'السماوة', list: '1' }, { code: 'A216', name: 'المفاخر للبنين', sector: 'السماوة', list: '1' },
+            { code: 'A217', name: 'المهارات', sector: 'السماوة', list: '1' }, { code: 'A218', name: 'الميزان', sector: 'السماوة', list: '1' },
+            { code: 'A219', name: 'الناسكات', sector: 'السماوة', list: '1' }, { code: 'A220', name: 'النبلاء المختلطة', sector: 'السماوة', list: '1' },
+            { code: 'A221', name: 'النبوغ للبنات', sector: 'السماوة', list: '1' }, { code: 'A222', name: 'النجوم للبنات', sector: 'السماوة', list: '1' },
+            { code: 'A223', name: 'النخيل', sector: 'السماوة', list: '1' }, { code: 'A224', name: 'الندى للبنات', sector: 'السماوة', list: '1' },
+            { code: 'A225', name: 'النزاهه', sector: 'السماوة', list: '1' }, { code: 'A226', name: 'النسيم للبنات', sector: 'السماوة', list: '1' },
+            { code: 'A227', name: 'النظامية', sector: 'السماوة', list: '1' }, { code: 'A228', name: 'النموذج', sector: 'السماوة', list: '1' },
+            { code: 'A229', name: 'النهروان للبنين', sector: 'السماوة', list: '1' }, { code: 'A230', name: 'النوافل الابتدائية المختلطة', sector: 'السماوة', list: '1' },
+            { code: 'A231', name: 'النيازك', sector: 'السماوة', list: '1' }, { code: 'A232', name: 'الهداية', sector: 'السماوة', list: '1' },
+            { code: 'A233', name: 'الهدى للبنات', sector: 'السماوة', list: '1' }, { code: 'A234', name: 'الوثبة', sector: 'السماوة', list: '1' },
+            { code: 'A235', name: 'الوصي', sector: 'السماوة', list: '1' }, { code: 'A236', name: 'الوطن', sector: 'السماوة', list: '1' },
+            { code: 'A237', name: 'اليمامة للبنات', sector: 'السماوة', list: '1' }, { code: 'A238', name: 'ام القرى', sector: 'السماوة', list: '1' },
+            { code: 'A239', name: 'ام الكتاب للبنات', sector: 'السماوة', list: '1' }, { code: 'A240', name: 'ام وهب للبنات', sector: 'السماوة', list: '1' },
+            { code: 'A241', name: 'امرلي', sector: 'السماوة', list: '1' }, { code: 'A242', name: 'امنة بنت وهب', sector: 'السماوة', list: '1' },
+            { code: 'A243', name: 'باب الحوائج', sector: 'السماوة', list: '1' }, { code: 'A244', name: 'بدر الكبرى', sector: 'السماوة', list: '1' },
+            { code: 'A245', name: 'براثا للبنين', sector: 'السماوة', list: '1' }, { code: 'A246', name: 'بطل الاسلام', sector: 'السماوة', list: '1' },
+            { code: 'A247', name: 'تبارك', sector: 'السماوة', list: '1' }, { code: 'A248', name: 'تبوك للبنات', sector: 'السماوة', list: '1' },
+            { code: 'A249', name: 'جرف النصر', sector: 'السماوة', list: '1' }, { code: 'A250', name: 'جعفر الطيار للبنين', sector: 'السماوة', list: '1' },
+            { code: 'A251', name: 'حطين للبنين', sector: 'السماوة', list: '1' }, { code: 'A252', name: 'حليمة السعدية للبنات', sector: 'السماوة', list: '1' },
+            { code: 'A253', name: 'حماة الوطن', sector: 'السماوة', list: '1' }, { code: 'A254', name: 'حمورابي', sector: 'السماوة', list: '1' },
+            { code: 'A255', name: 'حواء للبنات', sector: 'السماوة', list: '1' }, { code: 'A256', name: 'دعبل الخزاعي', sector: 'السماوة', list: '1' },
+            { code: 'A257', name: 'ساوه', sector: 'السماوة', list: '1' }, { code: 'A258', name: 'سبأ للبنين', sector: 'السماوة', list: '1' },
+            { code: 'A259', name: 'سبع الدجيل', sector: 'السماوة', list: '1' }, { code: 'A260', name: 'سفير الحسين ع', sector: 'السماوة', list: '1' },
+            { code: 'A261', name: 'سكينة للبنات', sector: 'السماوة', list: '1' }, { code: 'A262', name: 'سومر للبنات', sector: 'السماوة', list: '1' },
+            { code: 'A263', name: 'سيد الكونين (ص)', sector: 'السماوة', list: '1' }, { code: 'A264', name: 'سيدة النساء (ع)', sector: 'السماوة', list: '1' },
+            { code: 'A265', name: 'شهداء العراق', sector: 'السماوة', list: '1' }, { code: 'A266', name: 'طليطلة', sector: 'السماوة', list: '1' },
+            { code: 'A267', name: 'عابس الشاكري', sector: 'السماوة', list: '1' }, { code: 'A268', name: 'عبد الله بن رواحة', sector: 'السماوة', list: '1' },
+            { code: 'A269', name: 'عراق الصمود', sector: 'السماوة', list: '1' }, { code: 'A270', name: 'عرفة', sector: 'السماوة', list: '1' },
+            { code: 'A271', name: 'عمار بن ياسر', sector: 'السماوة', list: '1' }, { code: 'A272', name: 'عمر مختار للبنين', sector: 'السماوة', list: '1' },
+            { code: 'A273', name: 'عمر بن عبد العزيز', sector: 'السماوة', list: '1' }, { code: 'A274', name: 'عون', sector: 'السماوة', list: '1' },
+            { code: 'A275', name: 'غرناطة', sector: 'السماوة', list: '1' }, { code: 'A276', name: 'فاطمة بنت اسد', sector: 'السماوة', list: '1' },
+            { code: 'A277', name: 'قباء', sector: 'السماوة', list: '1' }, { code: 'A278', name: 'قريش المختلطة', sector: 'السماوة', list: '1' },
+            { code: 'A279', name: 'كفر قاسم', sector: 'السماوة', list: '1' }, { code: 'A280', name: 'كميل بن زياد', sector: 'السماوة', list: '1' },
+            { code: 'A281', name: 'لقمان الحكيم', sector: 'السماوة', list: '1' }, { code: 'A282', name: 'مأرب', sector: 'السماوة', list: '1' },
+            { code: 'A283', name: 'مالك بن نويرة', sector: 'السماوة', list: '1' }, { code: 'A284', name: 'محسن الخياط للبنات', sector: 'السماوة', list: '1' },
+            { code: 'A285', name: 'محمد ذو النفس الزكية', sector: 'السماوة', list: '1' }, { code: 'A286', name: 'مسك الختام', sector: 'السماوة', list: '1' },
+            { code: 'A287', name: 'مصطفى جواد', sector: 'السماوة', list: '1' }, { code: 'A288', name: 'مكة المكرمة للبنات', sector: 'السماوة', list: '1' },
+            { code: 'A289', name: 'منة المنان للبنات', sector: 'السماوة', list: '1' }, { code: 'A290', name: 'مهد الحضارات', sector: 'السماوة', list: '1' },
+            { code: 'A291', name: 'ميثم التمار للبنين', sector: 'السماوة', list: '1' }, { code: 'A292', name: 'نابلس', sector: 'السماوة', list: '1' },
+            { code: 'A293', name: 'نون والقلم', sector: 'السماوة', list: '1' }, { code: 'A294', name: 'وليد الكعبة المختلطة', sector: 'السماوة', list: '1' },
+            { code: 'A295', name: 'يثرب', sector: 'السماوة', list: '1' },
+            // السماوة 2
+            { code: 'B046', name: 'متوسطة ابي الفضل العباس (ع)', sector: 'السماوة', list: '2' }, { code: 'B047', name: 'متوسطة الاخلاص ح2 للبنات', sector: 'السماوة', list: '2' },
+            { code: 'B048', name: 'متوسطة الارتقاء للبنين', sector: 'السماوة', list: '2' }, { code: 'B049', name: 'متوسطة الاكرمين المختلطة', sector: 'السماوة', list: '2' },
+            { code: 'B050', name: 'متوسطة الإمام الحسين(ع)', sector: 'السماوة', list: '2' }, { code: 'B051', name: 'متوسطة الامام الرضا ( ع ) ح2', sector: 'السماوة', list: '2' },
+            { code: 'B052', name: 'متوسطة الامل المنشود', sector: 'السماوة', list: '2' }, { code: 'B053', name: 'متوسطة الانسجام', sector: 'السماوة', list: '2' },
+            { code: 'B054', name: 'متوسطة الأوائل للبنين', sector: 'السماوة', list: '2' }, { code: 'B055', name: 'متوسطة الاوفياء للبنين', sector: 'السماوة', list: '2' },
+            { code: 'B056', name: 'متوسطة البحار المسائية', sector: 'السماوة', list: '2' }, { code: 'B057', name: 'متوسطة البواسل المختلطة', sector: 'السماوة', list: '2' },
+            { code: 'B058', name: 'متوسطة التراث المسائية', sector: 'السماوة', list: '2' }, { code: 'B059', name: 'متوسطة التكامل  للبنات', sector: 'السماوة', list: '2' },
+            { code: 'B060', name: 'متوسطة التهجد للبنات', sector: 'السماوة', list: '2' }, { code: 'B061', name: 'متوسطة الثبات المختلطة', sector: 'السماوة', list: '2' },
+            { code: 'B062', name: 'متوسطة الثقة المسائية للبنات', sector: 'السماوة', list: '2' }, { code: 'B063', name: 'متوسطة الرجاء للبنين', sector: 'السماوة', list: '2' },
+            { code: 'B064', name: 'متوسطة الريان للبنات', sector: 'السماوة', list: '2' }, { code: 'B065', name: 'متوسطة السبطين للبنين', sector: 'السماوة', list: '2' },
+            { code: 'B066', name: 'متوسطة الشرارة الأولى', sector: 'السماوة', list: '2' }, { code: 'B067', name: 'متوسطة الشموس للبنات', sector: 'السماوة', list: '2' },
+            { code: 'B068', name: 'متوسطة الشهيد أبو مهدي المهندس', sector: 'السماوة', list: '2' }, { code: 'B069', name: 'متوسطة الشهيد عادل ناصر للبنين', sector: 'السماوة', list: '2' },
+            { code: 'B070', name: 'متوسطة الشهيد محمد صادق الصدر للبنين', sector: 'السماوة', list: '2' }, { code: 'B071', name: 'متوسطة الشيخ مهدي السماوي', sector: 'السماوة', list: '2' },
+            { code: 'B072', name: 'متوسطة الصحاري للبنين', sector: 'السماوة', list: '2' }, { code: 'B073', name: 'متوسطة الصحف الاولى للبنين', sector: 'السماوة', list: '2' },
+            { code: 'B074', name: 'متوسطة الصحيفة السجادية للبنات', sector: 'السماوة', list: '2' }, { code: 'B075', name: 'متوسطة الطموح للبنات', sector: 'السماوة', list: '2' },
+            { code: 'B076', name: 'متوسطة العراق الجديد', sector: 'السماوة', list: '2' }, { code: 'B077', name: 'متوسطة العقيدة للبنات', sector: 'السماوة', list: '2' },
+            { code: 'B078', name: 'متوسطة الفراهيدي ح2', sector: 'السماوة', list: '2' }, { code: 'B079', name: 'متوسطة الكرامة للبنات', sector: 'السماوة', list: '2' },
+            { code: 'B080', name: 'متوسطة المبادئ للبنين', sector: 'السماوة', list: '2' }, { code: 'B081', name: 'متوسطة المستقبل للبنين', sector: 'السماوة', list: '2' },
+            { code: 'B082', name: 'متوسطة النجف الاشرف', sector: 'السماوة', list: '2' }, { code: 'B083', name: 'متوسطة الياقوت للبنات', sector: 'السماوة', list: '2' },
+            { code: 'B084', name: 'متوسطة الينابيع المختلطة', sector: 'السماوة', list: '2' }, { code: 'B085', name: 'متوسطة ايلاف للبنات', sector: 'السماوة', list: '2' },
+            { code: 'B086', name: 'متوسطة زينب الكبرى للبنات', sector: 'السماوة', list: '2' }, { code: 'B087', name: 'متوسطة صوت الحق', sector: 'السماوة', list: '2' },
+            { code: 'B088', name: 'متوسطة فدك للبنات', sector: 'السماوة', list: '2' }, { code: 'B089', name: 'متوسطة كربلاء المقدسة للبنين', sector: 'السماوة', list: '2' },
+            { code: 'B090', name: 'متوسطة كنز المعرفة للبنين', sector: 'السماوة', list: '2' }, { code: 'B091', name: 'متوسطة وارث المختلطة', sector: 'السماوة', list: '2' },
+            { code: 'B092', name: 'اعدادية التآخي للبنين', sector: 'السماوة', list: '2' }, { code: 'B093', name: 'اعدادية الحسين ع للحاسوب وتقنية المعلومات', sector: 'السماوة', list: '2' },
+            { code: 'B094', name: 'اعدادية الزهور للبنات', sector: 'السماوة', list: '2' }, { code: 'B095', name: 'اعدادية السماوة الزراعية', sector: 'السماوة', list: '2' },
+            { code: 'B096', name: 'اعدادية السماوة المسائية للبنات', sector: 'السماوة', list: '2' }, { code: 'B097', name: 'اعدادية السماوة المهنية المسائية', sector: 'السماوة', list: '2' },
+            { code: 'B098', name: 'اعدادية السماوة النموذجية للبنين', sector: 'السماوة', list: '2' }, { code: 'B099', name: 'اعدادية الفائزات للبنات', sector: 'السماوة', list: '2' },
+            { code: 'B100', name: 'اعدادية الفرسان للبنين', sector: 'السماوة', list: '2' }, { code: 'B101', name: 'اعدادية القلم المسائية', sector: 'السماوة', list: '2' },
+            { code: 'B102', name: 'اعدادية المثنى للعلوم الرياضية', sector: 'السماوة', list: '2' }, { code: 'B103', name: 'اعدادية الوفاء للبنات', sector: 'السماوة', list: '2' },
+            { code: 'B104', name: 'اعدادية فلسطين للبنات', sector: 'السماوة', list: '2' }, { code: 'B105', name: 'الثانوية المطورة للمتفوقين', sector: 'السماوة', list: '2' },
+            { code: 'B106', name: 'الثانوية النموذجية للمتفوقات', sector: 'السماوة', list: '2' }, { code: 'B107', name: 'ثانوية ابي طالب المختلطة', sector: 'السماوة', list: '2' },
+            { code: 'B108', name: 'ثانوية الافاق', sector: 'السماوة', list: '2' }, { code: 'B109', name: 'ثانوية الافكار للمتفوقين للبنين', sector: 'السماوة', list: '2' },
+            { code: 'B110', name: 'ثانوية الاقمار المنيرة للبنات', sector: 'السماوة', list: '2' }, { code: 'B111', name: 'ثانوية الأم الفاضلة للبنات', sector: 'السماوة', list: '2' },
+            { code: 'B112', name: 'ثانوية الامام امير المؤمنين ( وقف شيعي )', sector: 'السماوة', list: '2' }, { code: 'B113', name: 'ثانوية الامل للبنات', sector: 'السماوة', list: '2' },
+            { code: 'B114', name: 'ثانوية الانوار للبنين', sector: 'السماوة', list: '2' }, { code: 'B115', name: 'ثانوية البيت السعيد للبنات', sector: 'السماوة', list: '2' },
+            { code: 'B116', name: 'ثانوية التحرير للمتميزين', sector: 'السماوة', list: '2' }, { code: 'B117', name: 'ثانوية التسنيم للبنات', sector: 'السماوة', list: '2' },
+            { code: 'B118', name: 'ثانوية السؤدد للمتفوقات', sector: 'السماوة', list: '2' }, { code: 'B119', name: 'ثانوية السبع المثاني للبنات', sector: 'السماوة', list: '2' },
+            { code: 'B120', name: 'ثانوية السهل الأخضر', sector: 'السماوة', list: '2' }, { code: 'B121', name: 'ثانوية الشريعة للبنات', sector: 'السماوة', list: '2' },
+            { code: 'B122', name: 'ثانوية الشيخ عطشان للبنات', sector: 'السماوة', list: '2' }, { code: 'B123', name: 'ثانوية الصادقين للبنين', sector: 'السماوة', list: '2' },
+            { code: 'B124', name: 'ثانوية العفاف للبنات', sector: 'السماوة', list: '2' }, { code: 'B125', name: 'ثانوية الغد المشرق للبنات', sector: 'السماوة', list: '2' },
+            { code: 'B126', name: 'ثانوية القبلتين للبنات', sector: 'السماوة', list: '2' }, { code: 'B127', name: 'ثانوية الكون التعليمية للبنات', sector: 'السماوة', list: '2' },
+            { code: 'B128', name: 'ثانوية الماسة للبنات', sector: 'السماوة', list: '2' }, { code: 'B129', name: 'ثانوية المتفوقات للبنات', sector: 'السماوة', list: '2' },
+            { code: 'B130', name: 'ثانوية المتفوقين للبنين', sector: 'السماوة', list: '2' }, { code: 'B131', name: 'ثانوية النقاء للبنات', sector: 'السماوة', list: '2' },
+            { code: 'B132', name: 'ثانوية الهادي الأمين للبنين', sector: 'السماوة', list: '2' }, { code: 'B133', name: 'ثانوية الوادي المقدس للبنين', sector: 'السماوة', list: '2' },
+            { code: 'B134', name: 'ثانوية ام البنين للبنات', sector: 'السماوة', list: '2' }, { code: 'B135', name: 'ثانوية امنة بنت وهب وقف شيعي', sector: 'السماوة', list: '2' },
+            { code: 'B136', name: 'ثانوية خديجة للبنات', sector: 'السماوة', list: '2' }, { code: 'B137', name: 'ثانوية خزائن العلم', sector: 'السماوة', list: '2' },
+            { code: 'B138', name: 'ثانوية رقية للمتميزات', sector: 'السماوة', list: '2' }, { code: 'B139', name: 'ثانوية زها حديد للبنات', sector: 'السماوة', list: '2' },
+            { code: 'B140', name: 'ثانوية عشتار للبنات', sector: 'السماوة', list: '2' }, { code: 'B141', name: 'ثانوية قادة النصر', sector: 'السماوة', list: '2' },
+            { code: 'B142', name: 'ثانوية نور الايمان للبنات', sector: 'السماوة', list: '2' }, { code: 'B143', name: 'ثانوية نور القمر', sector: 'السماوة', list: '2' },
+            { code: 'B144', name: 'اعدادية الزهراء (ع) للبنات', sector: 'السماوة', list: '2' }, { code: 'B145', name: 'اعدادية السماوة الصناعية', sector: 'السماوة', list: '2' },
+            { code: 'B146', name: 'اعدادية السماوة المهنية للبنات', sector: 'السماوة', list: '2' }, { code: 'B147', name: 'إعدادية السماوة للبنات', sector: 'السماوة', list: '2' },
+            { code: 'B148', name: 'اعدادية السماوة للبنين', sector: 'السماوة', list: '2' }, { code: 'B149', name: 'اعدادية الشهيد الصدر للبنين', sector: 'السماوة', list: '2' },
+            { code: 'B150', name: 'اعدادية المثنى التجارية للبنين', sector: 'السماوة', list: '2' }, { code: 'B151', name: 'اعدادية المثنى للبنين', sector: 'السماوة', list: '2' },
+            { code: 'B152', name: 'أعدادية أم سلمة للبنات', sector: 'السماوة', list: '2' }, { code: 'B153', name: 'اعدادية خولة بنت الحسين (ع) للبنات', sector: 'السماوة', list: '2' },
+            { code: 'B154', name: 'اعدادية نهج البلاغة للبنين', sector: 'السماوة', list: '2' }, { code: 'B155', name: 'الاعدادية المركزية', sector: 'السماوة', list: '2' },
+            { code: 'B156', name: 'الاعدادية المهدوية للبنين', sector: 'السماوة', list: '2' }, { code: 'B157', name: 'معهد الفنون الجميلة', sector: 'السماوة', list: '2' },
+            // الرميثة 1
+            { code: 'A001', name: 'اطفال الرميثة', sector: 'الرميثة', list: '1' }, { code: 'A002', name: 'الحنان النوذجية', sector: 'الرميثة', list: '1' },
+            { code: 'A003', name: 'الشقائق', sector: 'الرميثة', list: '1' }, { code: 'A004', name: 'الوان', sector: 'الرميثة', list: '1' },
+            { code: 'A005', name: 'ابا صالح', sector: 'الرميثة', list: '1' }, { code: 'A006', name: 'الابداع المختلطة', sector: 'الرميثة', list: '1' },
+            { code: 'A007', name: 'الاصحاب', sector: 'الرميثة', list: '1' }, { code: 'A008', name: 'الافلاذ المختلطة', sector: 'الرميثة', list: '1' },
+            { code: 'A009', name: 'الامام السجاد', sector: 'الرميثة', list: '1' }, { code: 'A010', name: 'الانسام اللبنات', sector: 'الرميثة', list: '1' },
+            { code: 'A011', name: 'البتول للبنات', sector: 'الرميثة', list: '1' }, { code: 'A012', name: 'البهجة المختلطة', sector: 'الرميثة', list: '1' },
+            { code: 'A013', name: 'البويب للبنات', sector: 'الرميثة', list: '1' }, { code: 'A014', name: 'التفوق للبنين', sector: 'الرميثة', list: '1' },
+            { code: 'A015', name: 'الثوار للبنات', sector: 'الرميثة', list: '1' }, { code: 'A016', name: 'الجهاد للبنين', sector: 'الرميثة', list: '1' },
+            { code: 'A017', name: 'الجواهري للبنين', sector: 'الرميثة', list: '1' }, { code: 'A018', name: 'الحق المختلطة', sector: 'الرميثة', list: '1' },
+            { code: 'A019', name: 'الحكمة', sector: 'الرميثة', list: '1' }, { code: 'A020', name: 'الحكيم للبنين', sector: 'الرميثة', list: '1' },
+            { code: 'A021', name: 'الرباط المختلطة', sector: 'الرميثة', list: '1' }, { code: 'A022', name: 'الرميثة للبنين', sector: 'الرميثة', list: '1' },
+            { code: 'A023', name: 'الشاكرين للبنين', sector: 'الرميثة', list: '1' }, { code: 'A024', name: 'الشموخ', sector: 'الرميثة', list: '1' },
+            { code: 'A025', name: 'الشهيد رسول هندول', sector: 'الرميثة', list: '1' }, { code: 'A026', name: 'الشهيد عبد علي نعمه', sector: 'الرميثة', list: '1' },
+            { code: 'A027', name: 'الشيخ ضيدان', sector: 'الرميثة', list: '1' }, { code: 'A028', name: 'الشيخ ياسين الرميثي', sector: 'الرميثة', list: '1' },
+            { code: 'A029', name: 'الطائف للبنين', sector: 'الرميثة', list: '1' }, { code: 'A030', name: 'العاديات للبنات', sector: 'الرميثة', list: '1' },
+            { code: 'A031', name: 'العارضيات المختلطة', sector: 'الرميثة', list: '1' }, { code: 'A032', name: 'الفرح النموذجية الاساسية', sector: 'الرميثة', list: '1' },
+            { code: 'A033', name: 'الفردوس للبنات', sector: 'الرميثة', list: '1' }, { code: 'A034', name: 'الفرزدق للبنين', sector: 'الرميثة', list: '1' },
+            { code: 'A035', name: 'الفرقد للبنات', sector: 'الرميثة', list: '1' }, { code: 'A036', name: 'القانتات للبنات', sector: 'الرميثة', list: '1' },
+            { code: 'A037', name: 'القباب الذهبية', sector: 'الرميثة', list: '1' }, { code: 'A038', name: 'القبس المختلطة', sector: 'الرميثة', list: '1' },
+            { code: 'A039', name: 'القدس المختلطة', sector: 'الرميثة', list: '1' }, { code: 'A040', name: 'الكرار للبنين', sector: 'الرميثة', list: '1' },
+            { code: 'A041', name: 'المباهلة المختلطة', sector: 'الرميثة', list: '1' }, { code: 'A042', name: 'المدينة المنورة للبنات', sector: 'الرميثة', list: '1' },
+            { code: 'A043', name: 'المروج للبنين', sector: 'الرميثة', list: '1' }, { code: 'A044', name: 'المستنصرية', sector: 'الرميثة', list: '1' },
+            { code: 'A045', name: 'المعارف', sector: 'الرميثة', list: '1' }, { code: 'A046', name: 'النجاح للبنات', sector: 'الرميثة', list: '1' },
+            { code: 'A047', name: 'النضال المختلطة', sector: 'الرميثة', list: '1' }, { code: 'A048', name: 'النمارق للبنات', sector: 'الرميثة', list: '1' },
+            { code: 'A049', name: 'الودق', sector: 'الرميثة', list: '1' }, { code: 'A050', name: 'اليقظة مختلطة', sector: 'الرميثة', list: '1' },
+            { code: 'A051', name: 'امام المتقين المختلطة', sector: 'الرميثة', list: '1' }, { code: 'A052', name: 'اهل البيت المختلطة', sector: 'الرميثة', list: '1' },
+            { code: 'A053', name: 'بغداد للبنين', sector: 'الرميثة', list: '1' }, { code: 'A054', name: 'ثورة العشرين للبنين', sector: 'الرميثة', list: '1' },
+            { code: 'A055', name: 'جرير للبنات', sector: 'الرميثة', list: '1' }, { code: 'A056', name: 'جوهرة البقيع', sector: 'الرميثة', list: '1' },
+            { code: 'A057', name: 'خيبر للبنات', sector: 'الرميثة', list: '1' }, { code: 'A058', name: 'دار السلام', sector: 'الرميثة', list: '1' },
+            { code: 'A059', name: 'ذات الصواري للبنات', sector: 'الرميثة', list: '1' }, { code: 'A060', name: 'زمزم للبنات', sector: 'الرميثة', list: '1' },
+            { code: 'A061', name: 'سمية للبنات', sector: 'الرميثة', list: '1' }, { code: 'A062', name: 'سيد ابراهيم', sector: 'الرميثة', list: '1' },
+            { code: 'A063', name: 'شعلان ابو الجون', sector: 'الرميثة', list: '1' }, { code: 'A064', name: 'شهداء احد', sector: 'الرميثة', list: '1' },
+            { code: 'A065', name: 'شهداء الجهاد', sector: 'الرميثة', list: '1' }, { code: 'A066', name: 'شهداء الفتوى', sector: 'الرميثة', list: '1' },
+            { code: 'A067', name: 'صنعاء للبنات', sector: 'الرميثة', list: '1' }, { code: 'A068', name: 'طوعه للبنات', sector: 'الرميثة', list: '1' },
+            { code: 'A069', name: 'قمر بني هاشم للبنين', sector: 'الرميثة', list: '1' }, { code: 'A070', name: 'محمد بن الحنفية', sector: 'الرميثة', list: '1' },
+            { code: 'A071', name: 'محمد علي الحساني للبنين', sector: 'الرميثة', list: '1' }, { code: 'A072', name: 'مسجد الشجرة', sector: 'الرميثة', list: '1' },
+            // الرميثة 2
+            { code: 'B001', name: 'متوسطة الإرادة', sector: 'الرميثة', list: '2' }, { code: 'B002', name: 'متوسطة البصرة للبنين', sector: 'الرميثة', list: '2' },
+            { code: 'B003', name: 'متوسطة البهاء للبنين', sector: 'الرميثة', list: '2' }, { code: 'B004', name: 'متوسطة التسامح المختلطة', sector: 'الرميثة', list: '2' },
+            { code: 'B005', name: 'متوسطة الحسنين ح2', sector: 'الرميثة', list: '2' }, { code: 'B006', name: 'متوسطة الذاريات للبنات', sector: 'الرميثة', list: '2' },
+            { code: 'B007', name: 'متوسطة الرافدين المسائية', sector: 'الرميثة', list: '2' }, { code: 'B008', name: 'متوسطة الشريف الرضي للبنين', sector: 'الرميثة', list: '2' },
+            { code: 'B009', name: 'متوسطة الشهيد حميد كاظم علوان', sector: 'الرميثة', list: '2' }, { code: 'B010', name: 'متوسطة الشهيد كاظم عبد السادة', sector: 'الرميثة', list: '2' },
+            { code: 'B011', name: 'متوسطة اللجين للبنات', sector: 'الرميثة', list: '2' }, { code: 'B012', name: 'متوسطة المناجاة للبنات', sector: 'الرميثة', list: '2' },
+            { code: 'B013', name: 'متوسطة النباهة للبنين', sector: 'الرميثة', list: '2' }, { code: 'B014', name: 'متوسطة النجدين للبنين', sector: 'الرميثة', list: '2' },
+            { code: 'B015', name: 'متوسطة النهرين المسائية', sector: 'الرميثة', list: '2' }, { code: 'B016', name: 'متوسطة النواظر للبنات', sector: 'الرميثة', list: '2' },
+            { code: 'B017', name: 'متوسطة النور للبنات', sector: 'الرميثة', list: '2' }, { code: 'B018', name: 'متوسطة اوتاد الأرض للبنات', sector: 'الرميثة', list: '2' },
+            { code: 'B019', name: 'متوسطة صفين للبنين', sector: 'الرميثة', list: '2' }, { code: 'B020', name: 'متوسطة مفاتيح الجنان', sector: 'الرميثة', list: '2' },
+            { code: 'B021', name: 'اعدادية أبطال الأنتفاضة المسائية', sector: 'الرميثة', list: '2' }, { code: 'B022', name: 'اعدادية الثقلين للبنين', sector: 'الرميثة', list: '2' },
+            { code: 'B023', name: 'اعدادية الرميثة للبنات', sector: 'الرميثة', list: '2' }, { code: 'B024', name: 'اعدادية الرميثة للبنين', sector: 'الرميثة', list: '2' },
+            { code: 'B025', name: 'اعدادية الشذرات للبنات', sector: 'الرميثة', list: '2' }, { code: 'B026', name: 'اعدادية الغدير المركزية للبنين', sector: 'الرميثة', list: '2' },
+            { code: 'B027', name: 'اعدادية المثابرون', sector: 'الرميثة', list: '2' }, { code: 'B028', name: 'اعدادية النجاة للبنات', sector: 'الرميثة', list: '2' },
+            { code: 'B029', name: 'اعدادية اوروك المهنية المختلطة', sector: 'الرميثة', list: '2' }, { code: 'B030', name: 'ثانوية الالباب للبنات', sector: 'الرميثة', list: '2' },
+            { code: 'B031', name: 'ثانوية الامام زين العابدين (ع) / وقف شيعي', sector: 'الرميثة', list: '2' }, { code: 'B032', name: 'ثانوية الحاج عدنان الاسدي للبنات', sector: 'الرميثة', list: '2' },
+            { code: 'B033', name: 'ثانوية الرفعة للبنات', sector: 'الرميثة', list: '2' }, { code: 'B034', name: 'ثانوية الرميثة المسائية للبنات*', sector: 'الرميثة', list: '2' },
+            { code: 'B035', name: 'ثانوية الروان للمتفوقات', sector: 'الرميثة', list: '2' }, { code: 'B036', name: 'ثانوية الساجدات للبنات', sector: 'الرميثة', list: '2' },
+            { code: 'B037', name: 'ثانوية السراج للمتفوقين للبنين', sector: 'الرميثة', list: '2' }, { code: 'B038', name: 'ثانوية الشيخ خوام للبنين', sector: 'الرميثة', list: '2' },
+            { code: 'B039', name: 'ثانوية العلياء للبنات', sector: 'الرميثة', list: '2' }, { code: 'B040', name: 'ثانوية المحاسن للبنات', sector: 'الرميثة', list: '2' },
+            { code: 'B041', name: 'ثانوية فاطمة الزهراء (ع) / وقف شيعي', sector: 'الرميثة', list: '2' }, { code: 'B042', name: 'ثانوية مشاعل الفكر للبنات', sector: 'الرميثة', list: '2' },
+            { code: 'B043', name: 'اعدادية الخنساء للبنات', sector: 'الرميثة', list: '2' }, { code: 'B044', name: 'اعدادية الرميثة الصناعية', sector: 'الرميثة', list: '2' },
+            { code: 'B045', name: 'اعدادية الرميثة المهنية للبنات', sector: 'الرميثة', list: '2' },
+            // الخضر 1
+            { code: 'A296', name: 'أطفال الخضر', sector: 'الخضر', list: '1' }, { code: 'A297', name: 'ابن الفارض', sector: 'الخضر', list: '1' },
+            { code: 'A298', name: 'ابو ايوب الانصاري', sector: 'الخضر', list: '1' }, { code: 'A299', name: 'ابو ثمامه الصائدي', sector: 'الخضر', list: '1' },
+            { code: 'A300', name: 'اسد الله', sector: 'الخضر', list: '1' }, { code: 'A301', name: 'اسماء للبنات', sector: 'الخضر', list: '1' },
+            { code: 'A302', name: 'اصحاب الكساء', sector: 'الخضر', list: '1' }, { code: 'A303', name: 'أطياف الامل الابتدائية', sector: 'الخضر', list: '1' },
+            { code: 'A304', name: 'ال محسن', sector: 'الخضر', list: '1' }, { code: 'A305', name: 'الاصول', sector: 'الخضر', list: '1' },
+            { code: 'A306', name: 'الاغصان للبنات', sector: 'الخضر', list: '1' }, { code: 'A307', name: 'الامام الحسن (ع)', sector: 'الخضر', list: '1' },
+            { code: 'A308', name: 'الاماني', sector: 'الخضر', list: '1' }, { code: 'A309', name: 'الانتماء', sector: 'الخضر', list: '1' },
+            { code: 'A310', name: 'الأنهار', sector: 'الخضر', list: '1' }, { code: 'A311', name: 'الاهتداء', sector: 'الخضر', list: '1' },
+            { code: 'A312', name: 'الايات', sector: 'الخضر', list: '1' }, { code: 'A313', name: 'البراق', sector: 'الخضر', list: '1' },
+            { code: 'A314', name: 'البقيع', sector: 'الخضر', list: '1' }, { code: 'A315', name: 'البيادر', sector: 'الخضر', list: '1' },
+            { code: 'A316', name: 'التفاؤل', sector: 'الخضر', list: '1' }, { code: 'A317', name: 'التقى', sector: 'الخضر', list: '1' },
+            { code: 'A318', name: 'التكاتف', sector: 'الخضر', list: '1' }, { code: 'A319', name: 'الجنة الخضراء', sector: 'الخضر', list: '1' },
+            { code: 'A320', name: 'الحرف الأول', sector: 'الخضر', list: '1' }, { code: 'A321', name: 'الحروف الذهبية', sector: 'الخضر', list: '1' },
+            { code: 'A322', name: 'الحقيقة', sector: 'الخضر', list: '1' }, { code: 'A323', name: 'الحمزة', sector: 'الخضر', list: '1' },
+            { code: 'A324', name: 'الخلد', sector: 'الخضر', list: '1' }, { code: 'A325', name: 'الخليل', sector: 'الخضر', list: '1' },
+            { code: 'A326', name: 'الخورنق', sector: 'الخضر', list: '1' }, { code: 'A327', name: 'الرباب', sector: 'الخضر', list: '1' },
+            { code: 'A328', name: 'الرحاب الصحراوية*', sector: 'الخضر', list: '1' }, { code: 'A329', name: 'الرشاد', sector: 'الخضر', list: '1' },
+            { code: 'A330', name: 'الروح الأمين', sector: 'الخضر', list: '1' }, { code: 'A331', name: 'الرياحين', sector: 'الخضر', list: '1' },
+            { code: 'A332', name: 'الزوراء', sector: 'الخضر', list: '1' }, { code: 'A333', name: 'السجود', sector: 'الخضر', list: '1' },
+            { code: 'A334', name: 'السفينه', sector: 'الخضر', list: '1' }, { code: 'A335', name: 'الشهيد ياسر شراد', sector: 'الخضر', list: '1' },
+            { code: 'A336', name: 'الصافات', sector: 'الخضر', list: '1' }, { code: 'A337', name: 'الضحى', sector: 'الخضر', list: '1' },
+            { code: 'A338', name: 'الظاهرة', sector: 'الخضر', list: '1' }, { code: 'A339', name: 'العرفان', sector: 'الخضر', list: '1' },
+            { code: 'A340', name: 'العقبة', sector: 'الخضر', list: '1' }, { code: 'A341', name: 'الفتح', sector: 'الخضر', list: '1' },
+            { code: 'A342', name: 'الفرح النموذجية الابتدائية للايتام', sector: 'الخضر', list: '1' }, { code: 'A343', name: 'الفصاحة', sector: 'الخضر', list: '1' },
+            { code: 'A344', name: 'القاسم بن الكاظم', sector: 'الخضر', list: '1' }, { code: 'A345', name: 'القنيطرة', sector: 'الخضر', list: '1' },
+            { code: 'A346', name: 'الكندي', sector: 'الخضر', list: '1' }, { code: 'A347', name: 'المثابرة', sector: 'الخضر', list: '1' },
+            { code: 'A348', name: 'المرايا', sector: 'الخضر', list: '1' }, { code: 'A349', name: 'المسلة', sector: 'الخضر', list: '1' },
+            { code: 'A350', name: 'المشاعل', sector: 'الخضر', list: '1' }, { code: 'A351', name: 'المصطفى', sector: 'الخضر', list: '1' },
+            { code: 'A352', name: 'المقداد', sector: 'الخضر', list: '1' }, { code: 'A353', name: 'المواهب', sector: 'الخضر', list: '1' },
+            { code: 'A354', name: 'النصر', sector: 'الخضر', list: '1' }, { code: 'A355', name: 'النعمان', sector: 'الخضر', list: '1' },
+            { code: 'A356', name: 'النفحات', sector: 'الخضر', list: '1' }, { code: 'A357', name: 'امرؤ القيس', sector: 'الخضر', list: '1' },
+            { code: 'A358', name: 'انصار الحسين', sector: 'الخضر', list: '1' }, { code: 'A359', name: 'انوار الجوادين', sector: 'الخضر', list: '1' },
+            { code: 'A360', name: 'برير', sector: 'الخضر', list: '1' }, { code: 'A361', name: 'بقية الله', sector: 'الخضر', list: '1' },
+            { code: 'A362', name: 'بلاد العز', sector: 'الخضر', list: '1' }, { code: 'A363', name: 'تموز 14', sector: 'الخضر', list: '1' },
+            { code: 'A364', name: 'جنين', sector: 'الخضر', list: '1' }, { code: 'A365', name: 'دار الحكمة', sector: 'الخضر', list: '1' },
+            { code: 'A366', name: 'درة لبنان', sector: 'الخضر', list: '1' }, { code: 'A367', name: 'زين العابدين', sector: 'الخضر', list: '1' },
+            { code: 'A368', name: 'سعيد بن جبير', sector: 'الخضر', list: '1' }, { code: 'A369', name: 'سيد الشهداء', sector: 'الخضر', list: '1' },
+            { code: 'A370', name: 'سيناء', sector: 'الخضر', list: '1' }, { code: 'A371', name: 'شط العرب', sector: 'الخضر', list: '1' },
+            { code: 'A372', name: 'شهيد المحراب', sector: 'الخضر', list: '1' }, { code: 'A373', name: 'طارق بن زياد', sector: 'الخضر', list: '1' },
+            { code: 'A374', name: 'عدن', sector: 'الخضر', list: '1' }, { code: 'A375', name: 'غزة للبنات', sector: 'الخضر', list: '1' },
+            { code: 'A376', name: 'قرطبة', sector: 'الخضر', list: '1' }, { code: 'A377', name: 'قيس بن المسهر', sector: 'الخضر', list: '1' },
+            { code: 'A378', name: 'كليم الله', sector: 'الخضر', list: '1' }, { code: 'A379', name: 'منى', sector: 'الخضر', list: '1' },
+            { code: 'A380', name: 'نافع بن هلال البجلي', sector: 'الخضر', list: '1' }, { code: 'A381', name: 'نشعه', sector: 'الخضر', list: '1' },
+            // الخضر 2
+            { code: 'B158', name: 'متوسطة إبراهيم المجاب', sector: 'الخضر', list: '2' }, { code: 'B159', name: 'متوسطة اشور المختلطة', sector: 'الخضر', list: '2' },
+            { code: 'B160', name: 'متوسطة ال بو ريشة للبنات', sector: 'الخضر', list: '2' }, { code: 'B161', name: 'متوسطة ال بو ريشة للبنين', sector: 'الخضر', list: '2' },
+            { code: 'B162', name: 'متوسطة الامام الحسن العسكري (ع)', sector: 'الخضر', list: '2' }, { code: 'B163', name: 'متوسطة الأهداف المختلطة', sector: 'الخضر', list: '2' },
+            { code: 'B164', name: 'متوسطة البرهان للبنين', sector: 'الخضر', list: '2' }, { code: 'B165', name: 'متوسطة البطولة', sector: 'الخضر', list: '2' },
+            { code: 'B166', name: 'متوسطة الجاحظ', sector: 'الخضر', list: '2' }, { code: 'B167', name: 'متوسطة الحر للرياحي للبنين', sector: 'الخضر', list: '2' },
+            { code: 'B168', name: 'متوسطة الحسنات للبنات', sector: 'الخضر', list: '2' }, { code: 'B169', name: 'متوسطة الحميدية', sector: 'الخضر', list: '2' },
+            { code: 'B170', name: 'متوسطة الخضر للبنات', sector: 'الخضر', list: '2' }, { code: 'B171', name: 'متوسطة الرقي المختلطة', sector: 'الخضر', list: '2' },
+            { code: 'B172', name: 'متوسطة الشذى', sector: 'الخضر', list: '2' }, { code: 'B173', name: 'متوسطة الصفوة المختلطة', sector: 'الخضر', list: '2' },
+            { code: 'B174', name: 'متوسطة العلم نور', sector: 'الخضر', list: '2' }, { code: 'B175', name: 'متوسطة الفاضلات للبنات', sector: 'الخضر', list: '2' },
+            { code: 'B176', name: 'متوسطة المبتكرون المختلطة', sector: 'الخضر', list: '2' }, { code: 'B177', name: 'متوسطة المبدعون للبنين', sector: 'الخضر', list: '2' },
+            { code: 'B178', name: 'متوسطة امل المستقبل للبنات', sector: 'الخضر', list: '2' }, { code: 'B179', name: 'متوسطة انوار الإسلام', sector: 'الخضر', list: '2' },
+            { code: 'B180', name: 'متوسطة خاتم الأنبياء المختلطة', sector: 'الخضر', list: '2' }, { code: 'B181', name: 'متوسطة رواد السلام المختلطة', sector: 'الخضر', list: '2' },
+            { code: 'B182', name: 'متوسطة زهرة النجاح المختلطة', sector: 'الخضر', list: '2' }, { code: 'B183', name: 'متوسطة ضياء الصالحين المختلطة', sector: 'الخضر', list: '2' },
+            { code: 'B184', name: 'متوسطة مكارم الاخلاق للبنين', sector: 'الخضر', list: '2' }, { code: 'B185', name: 'اعدادية الاندلس للبنات', sector: 'الخضر', list: '2' },
+            { code: 'B186', name: 'اعدادية الخضر النموذجية للبنين', sector: 'الخضر', list: '2' }, { code: 'B187', name: 'اعدادية الخوارزمي المهنية', sector: 'الخضر', list: '2' },
+            { code: 'B188', name: 'اعدادية الرضوان للبنين', sector: 'الخضر', list: '2' }, { code: 'B189', name: 'اعدادية المصابيح للبنات', sector: 'الخضر', list: '2' },
+            { code: 'B190', name: 'اعدادية ذو الفقار للبنين', sector: 'الخضر', list: '2' }, { code: 'B191', name: 'اعدادية عاتكة للبنات', sector: 'الخضر', list: '2' },
+            { code: 'B192', name: 'اعدادية نبع الفرات', sector: 'الخضر', list: '2' }, { code: 'B193', name: 'ثانوية الانامل الذهبية للبنات', sector: 'الخضر', list: '2' },
+            { code: 'B194', name: 'ثانوية الراية المختلطة', sector: 'الخضر', list: '2' }, { code: 'B195', name: 'ثانوية السجايا الحسنة للبنات', sector: 'الخضر', list: '2' },
+            { code: 'B196', name: 'ثانوية الضواحي المسائية للبنات', sector: 'الخضر', list: '2' }, { code: 'B197', name: 'ثانوية العطاء الدائم للمتفوقات', sector: 'الخضر', list: '2' },
+            { code: 'B198', name: 'ثانوية الفراتين المختلطة', sector: 'الخضر', list: '2' }, { code: 'B199', name: 'ثانوية المتألقات', sector: 'الخضر', list: '2' },
+            { code: 'B200', name: 'ثانوية المنار المسائية للبنين', sector: 'الخضر', list: '2' }, { code: 'B201', name: 'ثانوية الوداد للبنات', sector: 'الخضر', list: '2' },
+            { code: 'B202', name: 'ثانوية اليقين للبنات', sector: 'الخضر', list: '2' }, { code: 'B203', name: 'ثانوية سيف الحق للمتفوقين', sector: 'الخضر', list: '2' },
+            { code: 'B204', name: 'ثانوية شمس الامل للبنات', sector: 'الخضر', list: '2' }, { code: 'B205', name: 'ثانوية صفية للبنات', sector: 'الخضر', list: '2' },
+            { code: 'B206', name: 'ثانوية فجر السلالات المختلطة', sector: 'الخضر', list: '2' }, { code: 'B207', name: 'ثانوية نازك الملائكة', sector: 'الخضر', list: '2' },
+            { code: 'B208', name: 'اعدادية الخضر الصناعية', sector: 'الخضر', list: '2' },
+            // السلمان 1
+            { code: 'A382', name: 'الياسمين', sector: 'السلمان', list: '1' }, { code: 'A383', name: 'الروضتين', sector: 'السلمان', list: '1' },
+            { code: 'A384', name: 'العميد', sector: 'السلمان', list: '1' }, { code: 'A385', name: 'الواحة', sector: 'السلمان', list: '1' },
+            { code: 'A386', name: 'الوادي', sector: 'السلمان', list: '1' }, { code: 'A387', name: 'بصية', sector: 'السلمان', list: '1' },
+            { code: 'A388', name: 'عبد المطلب', sector: 'السلمان', list: '1' }, { code: 'A389', name: 'هاجر', sector: 'السلمان', list: '1' },
+            // السلمان 2
+            { code: 'B209', name: 'ثانوية الحطيم للبنات', sector: 'السلمان', list: '2' }, { code: 'B210', name: 'ثانوية السلمان المختلطة', sector: 'السلمان', list: '2' },
+            { code: 'B211', name: 'ثانوية بصية المختلطة', sector: 'السلمان', list: '2' },
+            // السوير 1
+            { code: 'A390', name: 'واحة الفرح', sector: 'السوير', list: '1' }, { code: 'A391', name: 'ابن المقفع المختلطة', sector: 'السوير', list: '1' },
+            { code: 'A392', name: 'اسوان للبنين', sector: 'السوير', list: '1' }, { code: 'A393', name: 'الاثار المختلطة', sector: 'السوير', list: '1' },
+            { code: 'A394', name: 'الاخاء المختلطة', sector: 'السوير', list: '1' }, { code: 'A395', name: 'الاسرة التربوية', sector: 'السوير', list: '1' },
+            { code: 'A396', name: 'الاصلاح المختلطة', sector: 'السوير', list: '1' }, { code: 'A397', name: 'الانفال المختلطة', sector: 'السوير', list: '1' },
+            { code: 'A398', name: 'التضحية المختلطة', sector: 'السوير', list: '1' }, { code: 'A399', name: 'الجنائن المختلطة', sector: 'السوير', list: '1' },
+            { code: 'A400', name: 'الحيدرية المختلطة', sector: 'السوير', list: '1' }, { code: 'A401', name: 'الدعاء المختلطة', sector: 'السوير', list: '1' },
+            { code: 'A402', name: 'الرازي المختلطة', sector: 'السوير', list: '1' }, { code: 'A403', name: 'الروابي المختلطة*', sector: 'السوير', list: '1' },
+            { code: 'A404', name: 'الرواد المختلطة', sector: 'السوير', list: '1' }, { code: 'A405', name: 'الزرقاء للبنات', sector: 'السوير', list: '1' },
+            { code: 'A406', name: 'السماحة المختلطة', sector: 'السوير', list: '1' }, { code: 'A407', name: 'السيد محسن الحكيم', sector: 'السوير', list: '1' },
+            { code: 'A408', name: 'الضاد', sector: 'السوير', list: '1' }, { code: 'A409', name: 'العروبة المختلطة', sector: 'السوير', list: '1' },
+            { code: 'A410', name: 'العروة الوثقى للبنين', sector: 'السوير', list: '1' }, { code: 'A411', name: 'الفجر المختلطة', sector: 'السوير', list: '1' },
+            { code: 'A412', name: 'الفلق المختلطة', sector: 'السوير', list: '1' }, { code: 'A413', name: 'الكميت المختلطة', sector: 'السوير', list: '1' },
+            { code: 'A414', name: 'اللؤلؤة', sector: 'السوير', list: '1' }, { code: 'A415', name: 'المناهل المختلطة', sector: 'السوير', list: '1' },
+            { code: 'A416', name: 'المودة  المختلطة', sector: 'السوير', list: '1' }, { code: 'A417', name: 'الميمون', sector: 'السوير', list: '1' },
+            { code: 'A418', name: 'النبأ المختلطة', sector: 'السوير', list: '1' }, { code: 'A419', name: 'الواثق*', sector: 'السوير', list: '1' },
+            { code: 'A420', name: 'اويس القرني', sector: 'السوير', list: '1' }, { code: 'A421', name: 'بلال الحبشي المختلطة', sector: 'السوير', list: '1' },
+            { code: 'A422', name: 'جابر الانصاري المختلطة', sector: 'السوير', list: '1' }, { code: 'A423', name: 'جواد الائمة المختلطة*', sector: 'السوير', list: '1' },
+            { code: 'A424', name: 'حامل اللواء', sector: 'السوير', list: '1' }, { code: 'A425', name: 'حبيب بن مظاهر', sector: 'السوير', list: '1' },
+            { code: 'A426', name: 'حيفا للبنات', sector: 'السوير', list: '1' }, { code: 'A427', name: 'خاتم الرسل المختلطة', sector: 'السوير', list: '1' },
+            { code: 'A428', name: 'رشيد الهجري', sector: 'السوير', list: '1' }, { code: 'A429', name: 'زيد بن الارقم المختلطة', sector: 'السوير', list: '1' },
+            { code: 'A430', name: 'سامي عزارة', sector: 'السوير', list: '1' }, { code: 'A431', name: 'شموع الأجيال', sector: 'السوير', list: '1' },
+            { code: 'A432', name: 'غريب طوس', sector: 'السوير', list: '1' }, { code: 'A433', name: 'مسلم بن عوسجة', sector: 'السوير', list: '1' },
+            { code: 'A434', name: 'نبوخذ نصر', sector: 'السوير', list: '1' }, { code: 'A435', name: 'نبي الرحمة للبنات', sector: 'السوير', list: '1' },
+            { code: 'A436', name: 'يوسف الصديق', sector: 'السوير', list: '1' },
+            // السوير 2
+            { code: 'B212', name: 'متوسطة أبي الأسود الدؤلي', sector: 'السوير', list: '2' }, { code: 'B213', name: 'متوسطة الحامدات', sector: 'السوير', list: '2' },
+            { code: 'B214', name: 'متوسطة الدستور للبنين', sector: 'السوير', list: '2' }, { code: 'B215', name: 'متوسطة الزاكيات للبنات', sector: 'السوير', list: '2' },
+            { code: 'B216', name: 'متوسطة اليسر للبنات', sector: 'السوير', list: '2' }, { code: 'B217', name: 'متوسطة مصباح الهدى', sector: 'السوير', list: '2' },
+            { code: 'B218', name: 'اعدادية البسملة للبنات', sector: 'السوير', list: '2' }, { code: 'B219', name: 'ثانوية أحباب الحسين (ع)', sector: 'السوير', list: '2' },
+            { code: 'B220', name: 'ثانوية التآلف للبنات', sector: 'السوير', list: '2' }, { code: 'B221', name: 'ثانوية السليل للبنين', sector: 'السوير', list: '2' },
+            { code: 'B222', name: 'ثانوية الشهيد عبدالله كامل', sector: 'السوير', list: '2' }, { code: 'B223', name: 'ثانوية الموعظة للبنين', sector: 'السوير', list: '2' },
+            { code: 'B224', name: 'ثانوية شهداء السوير المسائية للبنين', sector: 'السوير', list: '2' }, { code: 'B225', name: 'ثاوية الضياء للبنات', sector: 'السوير', list: '2' },
+            { code: 'B226', name: 'أعدادية الخليج العربي للبنين', sector: 'السوير', list: '2' },
+            // المجد 1
+            { code: 'A437', name: 'النرجس', sector: 'المجد', list: '1' }, { code: 'A438', name: 'ابن الهيثم', sector: 'المجد', list: '1' },
+            { code: 'A439', name: 'الائمة', sector: 'المجد', list: '1' }, { code: 'A440', name: 'الامتثال', sector: 'المجد', list: '1' },
+            { code: 'A441', name: 'البحتري', sector: 'المجد', list: '1' }, { code: 'A442', name: 'الجولان للبنات', sector: 'المجد', list: '1' },
+            { code: 'A443', name: 'الحدباء', sector: 'المجد', list: '1' }, { code: 'A444', name: 'الرحاب الطاهرة', sector: 'المجد', list: '1' },
+            { code: 'A445', name: 'الرماح', sector: 'المجد', list: '1' }, { code: 'A446', name: 'الريف الزاهر', sector: 'المجد', list: '1' },
+            { code: 'A447', name: 'السفير الاول', sector: 'المجد', list: '1' }, { code: 'A448', name: 'الشهيد سليم الحلي', sector: 'المجد', list: '1' },
+            { code: 'A449', name: 'الشهيد هادي الياسري', sector: 'المجد', list: '1' }, { code: 'A450', name: 'الفاطمية للبنات', sector: 'المجد', list: '1' },
+            { code: 'A451', name: 'الكلمة الطيبة', sector: 'المجد', list: '1' }, { code: 'A452', name: 'الكوفة', sector: 'المجد', list: '1' },
+            { code: 'A453', name: 'المهلب', sector: 'المجد', list: '1' }, { code: 'A454', name: 'النماء', sector: 'المجد', list: '1' },
+            { code: 'A455', name: 'النهضة', sector: 'المجد', list: '1' }, { code: 'A456', name: 'الوهج', sector: 'المجد', list: '1' },
+            { code: 'A457', name: 'انامل المستقبل المختلطة', sector: 'المجد', list: '1' }, { code: 'A458', name: 'بردى', sector: 'المجد', list: '1' },
+            { code: 'A459', name: 'بنو هاشم', sector: 'المجد', list: '1' }, { code: 'A460', name: 'دجلة', sector: 'المجد', list: '1' },
+            { code: 'A461', name: 'سامراء', sector: 'المجد', list: '1' }, { code: 'A462', name: 'مصعب بن عمير', sector: 'المجد', list: '1' },
+            { code: 'A463', name: 'نور القائم', sector: 'المجد', list: '1' }, { code: 'A464', name: 'يافا', sector: 'المجد', list: '1' },
+            // المجد 2
+            { code: 'B227', name: 'متوسطة ابطال امرلي المختلطة', sector: 'المجد', list: '2' }, { code: 'B228', name: 'متوسطة احفاد ثورة العشرين', sector: 'المجد', list: '2' },
+            { code: 'B229', name: 'متوسطة ارض السواد', sector: 'المجد', list: '2' }, { code: 'B230', name: 'متوسطة الادريسي', sector: 'المجد', list: '2' },
+            { code: 'B231', name: 'متوسطة الارث الحضاري للبنين', sector: 'المجد', list: '2' }, { code: 'B232', name: 'متوسطة الشهيد محمد باقر الصدر', sector: 'المجد', list: '2' },
+            { code: 'B233', name: 'متوسطة الفارابي للبنات', sector: 'المجد', list: '2' }, { code: 'B234', name: 'متوسطة الياسرية', sector: 'المجد', list: '2' },
+            { code: 'B235', name: 'متوسطة مريم العذراء', sector: 'المجد', list: '2' }, { code: 'B236', name: 'متوسطة مسرى الرسول', sector: 'المجد', list: '2' },
+            { code: 'B237', name: 'ثانوية اعلام الهدى للبنات', sector: 'المجد', list: '2' }, { code: 'B238', name: 'ثانوية الاساور', sector: 'المجد', list: '2' },
+            { code: 'B239', name: 'ثانوية الشهيد عبد الكريم قاسم*', sector: 'المجد', list: '2' }, { code: 'B240', name: 'ثانوية المجد المسائية للبنين', sector: 'المجد', list: '2' },
+            { code: 'B241', name: 'ثانوية المجد للبنات', sector: 'المجد', list: '2' }, { code: 'B242', name: 'اعدادية ابي العلاء', sector: 'المجد', list: '2' },
+            // النجمي 1
+            { code: 'A465', name: 'الاريج', sector: 'النجمي', list: '1' }, { code: 'A466', name: 'ابي سعيد الخدري', sector: 'النجمي', list: '1' },
+            { code: 'A467', name: 'اطوار', sector: 'النجمي', list: '1' }, { code: 'A468', name: 'ال عقيل', sector: 'النجمي', list: '1' },
+            { code: 'A469', name: 'الاباء', sector: 'النجمي', list: '1' }, { code: 'A470', name: 'الابرار', sector: 'النجمي', list: '1' },
+            { code: 'A471', name: 'الاتقان', sector: 'النجمي', list: '1' }, { code: 'A472', name: 'الاستقامه', sector: 'النجمي', list: '1' },
+            { code: 'A473', name: 'الاهلة', sector: 'النجمي', list: '1' }, { code: 'A474', name: 'الاولياء', sector: 'النجمي', list: '1' },
+            { code: 'A475', name: 'التوحيد', sector: 'النجمي', list: '1' }, { code: 'A476', name: 'الجوهرة الابتدائية', sector: 'النجمي', list: '1' },
+            { code: 'A477', name: 'الحرية', sector: 'النجمي', list: '1' }, { code: 'A478', name: 'الحشد المبارك', sector: 'النجمي', list: '1' },
+            { code: 'A479', name: 'الحفاوة', sector: 'النجمي', list: '1' }, { code: 'A480', name: 'الخضراء', sector: 'النجمي', list: '1' },
+            { code: 'A481', name: 'الذكريات', sector: 'النجمي', list: '1' }, { code: 'A482', name: 'السمو', sector: 'النجمي', list: '1' },
+            { code: 'A483', name: 'الشهامة', sector: 'النجمي', list: '1' }, { code: 'A484', name: 'الشهيد امجد جبار الابتدائية', sector: 'النجمي', list: '1' },
+            { code: 'A485', name: 'الشهيد مجيبل', sector: 'النجمي', list: '1' }, { code: 'A486', name: 'الصالحات', sector: 'النجمي', list: '1' },
+            { code: 'A487', name: 'الطارق', sector: 'النجمي', list: '1' }, { code: 'A488', name: 'الطفل العربي', sector: 'النجمي', list: '1' },
+            { code: 'A489', name: 'العقيق', sector: 'النجمي', list: '1' }, { code: 'A490', name: 'القيم النبيلة المختلطة', sector: 'النجمي', list: '1' },
+            { code: 'A491', name: 'المجرة', sector: 'النجمي', list: '1' }, { code: 'A492', name: 'المسجد الأقصى', sector: 'النجمي', list: '1' },
+            { code: 'A493', name: 'المكاسب', sector: 'النجمي', list: '1' }, { code: 'A494', name: 'الملاذ', sector: 'النجمي', list: '1' },
+            { code: 'A495', name: 'الميامين', sector: 'النجمي', list: '1' }, { code: 'A496', name: 'النابغة الذبياني', sector: 'النجمي', list: '1' },
+            { code: 'A497', name: 'النبراس', sector: 'النجمي', list: '1' }, { code: 'A498', name: 'النيل', sector: 'النجمي', list: '1' },
+            { code: 'A499', name: 'باب العلم', sector: 'النجمي', list: '1' }, { code: 'A500', name: 'تدمر', sector: 'النجمي', list: '1' },
+            { code: 'A501', name: 'حاتم الطائي', sector: 'النجمي', list: '1' }, { code: 'A502', name: 'خولة بنت الازور', sector: 'النجمي', list: '1' },
+            { code: 'A503', name: 'زهير بن ابي سلمى', sector: 'النجمي', list: '1' }, { code: 'A504', name: 'سيد الانام', sector: 'النجمي', list: '1' },
+            { code: 'A505', name: 'شيخ البطحاء', sector: 'النجمي', list: '1' }, { code: 'A506', name: 'عبد الله ابو نجم', sector: 'النجمي', list: '1' },
+            { code: 'A507', name: 'فاهم الفرهود', sector: 'النجمي', list: '1' }, { code: 'A508', name: 'كاطع العوادي الابتدائية', sector: 'النجمي', list: '1' },
+            { code: 'A509', name: 'كعب بن زهير', sector: 'النجمي', list: '1' }, { code: 'A510', name: 'واحة العلم', sector: 'النجمي', list: '1' },
+            // النجمي 2
+            { code: 'B243', name: 'سدرة المنتهى للبنات', sector: 'النجمي', list: '2' }, { code: 'B244', name: 'متوسطة الجود', sector: 'النجمي', list: '2' },
+            { code: 'B245', name: 'متوسطة الشورى للبنين', sector: 'النجمي', list: '2' }, { code: 'B246', name: 'متوسطة القناديل المختلطة', sector: 'النجمي', list: '2' },
+            { code: 'B247', name: 'متوسطة الهمم', sector: 'النجمي', list: '2' }, { code: 'B248', name: 'متوسطة الهناء للبنات', sector: 'النجمي', list: '2' },
+            { code: 'B249', name: 'متوسطة سلمان المحمدي', sector: 'النجمي', list: '2' }, { code: 'B250', name: 'متوسطة وصي المصطفى المختلطة', sector: 'النجمي', list: '2' },
+            { code: 'B251', name: 'اعدادية القوارير للبنات', sector: 'النجمي', list: '2' }, { code: 'B252', name: 'اعدادية علي الاكبر ( ع ) للبنين', sector: 'النجمي', list: '2' },
+            { code: 'B253', name: 'ثانوية الثغر المختلطة', sector: 'النجمي', list: '2' }, { code: 'B254', name: 'ثانوية الذرى', sector: 'النجمي', list: '2' },
+            { code: 'B255', name: 'ثانوية طريق الحسين', sector: 'النجمي', list: '2' },
+            // الهلال 1
+            { code: 'A511', name: 'الصباح', sector: 'الهلال', list: '1' }, { code: 'A512', name: 'الابتهال', sector: 'الهلال', list: '1' },
+            { code: 'A513', name: 'الاصيل', sector: 'الهلال', list: '1' }, { code: 'A514', name: 'الامال', sector: 'الهلال', list: '1' },
+            { code: 'A515', name: 'البروج', sector: 'الهلال', list: '1' }, { code: 'A516', name: 'التصميم', sector: 'الهلال', list: '1' },
+            { code: 'A517', name: 'الحجاز', sector: 'الهلال', list: '1' }, { code: 'A518', name: 'الزيتون', sector: 'الهلال', list: '1' },
+            { code: 'A519', name: 'السعادة', sector: 'الهلال', list: '1' }, { code: 'A520', name: 'الشفق', sector: 'الهلال', list: '1' },
+            { code: 'A521', name: 'الصالحين للبنين', sector: 'الهلال', list: '1' }, { code: 'A522', name: 'العطاء الاسلامي', sector: 'الهلال', list: '1' },
+            { code: 'A523', name: 'العوالي', sector: 'الهلال', list: '1' }, { code: 'A524', name: 'الفضائل', sector: 'الهلال', list: '1' },
+            { code: 'A525', name: 'الكنوز', sector: 'الهلال', list: '1' }, { code: 'A526', name: 'المحبة', sector: 'الهلال', list: '1' },
+            { code: 'A527', name: 'الميقات', sector: 'الهلال', list: '1' }, { code: 'A528', name: 'الهلال للبنات', sector: 'الهلال', list: '1' },
+            { code: 'A529', name: 'اليرموك', sector: 'الهلال', list: '1' }, { code: 'A530', name: 'ام الربيعين', sector: 'الهلال', list: '1' },
+            { code: 'A531', name: 'بنات الحسن', sector: 'الهلال', list: '1' }, { code: 'A532', name: 'جنات عدن', sector: 'الهلال', list: '1' },
+            { code: 'A533', name: 'حجر بن عدي', sector: 'الهلال', list: '1' }, { code: 'A534', name: 'حذيفة بن اليمان', sector: 'الهلال', list: '1' },
+            { code: 'A535', name: 'ذوي القربى', sector: 'الهلال', list: '1' }, { code: 'A536', name: 'زهير بن القين', sector: 'الهلال', list: '1' },
+            { code: 'A537', name: 'زيد بن علي', sector: 'الهلال', list: '1' }, { code: 'A538', name: 'سراج الخير', sector: 'الهلال', list: '1' },
+            { code: 'A539', name: 'صفد', sector: 'الهلال', list: '1' }, { code: 'A540', name: 'عبد الله الرضيع', sector: 'الهلال', list: '1' },
+            { code: 'A541', name: 'هاني بن عروه', sector: 'الهلال', list: '1' },
+            // الهلال 2
+            { code: 'B256', name: 'متوسطة الاعتزاز', sector: 'الهلال', list: '2' }, { code: 'B257', name: 'متوسطة الامجاد', sector: 'الهلال', list: '2' },
+            { code: 'B258', name: 'متوسطة البلقاء للبنات', sector: 'الهلال', list: '2' }, { code: 'B259', name: 'متوسطة الثناء للبنات', sector: 'الهلال', list: '2' },
+            { code: 'B260', name: 'متوسطة الرسول الاعظم للبنين', sector: 'الهلال', list: '2' }, { code: 'B261', name: 'متوسطة السنن للبنات', sector: 'الهلال', list: '2' },
+            { code: 'B262', name: 'متوسطة انصار المرجعية', sector: 'الهلال', list: '2' }, { code: 'B263', name: 'متوسطة حبر الامة للبنين', sector: 'الهلال', list: '2' },
+            { code: 'B264', name: 'متوسطة زهور العراق للبنات', sector: 'الهلال', list: '2' }, { code: 'B265', name: 'متوسطة فتى الاسلام المختلطة', sector: 'الهلال', list: '2' },
+            { code: 'B266', name: 'متوسطة موطني للبنات', sector: 'الهلال', list: '2' }, { code: 'B267', name: 'متوسطة ميسلون للبنات', sector: 'الهلال', list: '2' },
+            { code: 'B268', name: 'متوسطة نهاوند', sector: 'الهلال', list: '2' }, { code: 'B269', name: 'اعدادية المسجد النبوي للبنين', sector: 'الهلال', list: '2' },
+            { code: 'B270', name: 'اعدادية الولاية للبنات', sector: 'الهلال', list: '2' }, { code: 'B271', name: 'اعدادية محمد مهدي البصير للبنين', sector: 'الهلال', list: '2' },
+            { code: 'B272', name: 'ثانوية  الهلال المسائية للبنين', sector: 'الهلال', list: '2' }, { code: 'B273', name: 'ثانوية النهج المستقيم المختلطة', sector: 'الهلال', list: '2' },
+            // الوركاء 1
+            { code: 'A542', name: 'النسائم', sector: 'الوركاء', list: '1' }, { code: 'A543', name: 'حيدر الكرار(ع)', sector: 'الوركاء', list: '1' },
+            { code: 'A544', name: 'الرحمن', sector: 'الوركاء', list: '1' }, { code: 'A545', name: 'الكفاح', sector: 'الوركاء', list: '1' },
+            { code: 'A546', name: 'المحمدية', sector: 'الوركاء', list: '1' }, { code: 'A547', name: 'ابن السكيت', sector: 'الوركاء', list: '1' },
+            { code: 'A548', name: 'الشفيع', sector: 'الوركاء', list: '1' }, { code: 'A549', name: 'الوقار', sector: 'الوركاء', list: '1' },
+            { code: 'A550', name: 'السدير', sector: 'الوركاء', list: '1' }, { code: 'A551', name: 'ذات السلاسل', sector: 'الوركاء', list: '1' },
+            { code: 'A552', name: 'الشهب', sector: 'الوركاء', list: '1' }, { code: 'A553', name: 'فلسطين', sector: 'الوركاء', list: '1' },
+            { code: 'A554', name: 'الوركاء للبنات', sector: 'الوركاء', list: '1' }, { code: 'A555', name: 'التعاون', sector: 'الوركاء', list: '1' },
+            { code: 'A556', name: 'السخاء', sector: 'الوركاء', list: '1' }, { code: 'A557', name: 'المجاهد', sector: 'الوركاء', list: '1' },
+            { code: 'A558', name: 'المعين', sector: 'الوركاء', list: '1' }, { code: 'A559', name: 'الاحرار', sector: 'الوركاء', list: '1' },
+            { code: 'A560', name: 'بطلة كربلاء', sector: 'الوركاء', list: '1' }, { code: 'A561', name: 'الجزيرة', sector: 'الوركاء', list: '1' },
+            { code: 'A562', name: 'الاهوار', sector: 'الوركاء', list: '1' }, { code: 'A563', name: 'ابو طبيخ', sector: 'الوركاء', list: '1' },
+            { code: 'A564', name: 'بلاد النهرين', sector: 'الوركاء', list: '1' }, { code: 'A565', name: 'البراءة', sector: 'الوركاء', list: '1' },
+            { code: 'A566', name: 'المدائن', sector: 'الوركاء', list: '1' }, { code: 'A567', name: 'العدنانية', sector: 'الوركاء', list: '1' },
+            { code: 'A568', name: 'الكواكب', sector: 'الوركاء', list: '1' }, { code: 'A569', name: 'ابي ذر الغفاري', sector: 'الوركاء', list: '1' },
+            { code: 'A570', name: 'طيبة', sector: 'الوركاء', list: '1' }, { code: 'A571', name: 'الفتوة', sector: 'الوركاء', list: '1' },
+            { code: 'A572', name: 'الشيخ المفيد', sector: 'الوركاء', list: '1' }, { code: 'A573', name: 'الشجرة الطيبة', sector: 'الوركاء', list: '1' },
+            { code: 'A574', name: 'النور', sector: 'الوركاء', list: '1' }, { code: 'A575', name: 'الأمير', sector: 'الوركاء', list: '1' },
+            { code: 'A576', name: 'السيادة', sector: 'الوركاء', list: '1' }, { code: 'A577', name: 'الحضارة', sector: 'الوركاء', list: '1' },
+            { code: 'A578', name: 'الوركاء للبنين', sector: 'الوركاء', list: '1' }, { code: 'A579', name: 'المختار', sector: 'الوركاء', list: '1' },
+            { code: 'A580', name: 'مسلم بن عقيل', sector: 'الوركاء', list: '1' }, { code: 'A581', name: 'البراعم', sector: 'الوركاء', list: '1' },
+            { code: 'A582', name: 'المشرق', sector: 'الوركاء', list: '1' }, { code: 'A583', name: 'الظفر', sector: 'الوركاء', list: '1' },
+            { code: 'A584', name: 'الكاظمي', sector: 'الوركاء', list: '1' }, { code: 'A585', name: 'النوارس', sector: 'الوركاء', list: '1' },
+            { code: 'A586', name: 'فضة', sector: 'الوركاء', list: '1' }, { code: 'A587', name: 'انوار الغدير', sector: 'الوركاء', list: '1' },
+            { code: 'A588', name: 'فيض الساقي', sector: 'الوركاء', list: '1' }, { code: 'A589', name: 'الشهد', sector: 'الوركاء', list: '1' },
+            { code: 'A590', name: 'الشيخ جميل الكعبي', sector: 'الوركاء', list: '1' }, { code: 'A591', name: 'الشهيد حاتم كامل', sector: 'الوركاء', list: '1' },
+            { code: 'A592', name: 'طريق النجاح', sector: 'الوركاء', list: '1' }, { code: 'A593', name: 'الاغراس', sector: 'الوركاء', list: '1' },
+            { code: 'A594', name: 'القمة', sector: 'الوركاء', list: '1' }, { code: 'A595', name: 'مدار العلماء', sector: 'الوركاء', list: '1' },
+            { code: 'A596', name: 'الخمائل', sector: 'الوركاء', list: '1' }, { code: 'A597', name: 'البيضاء', sector: 'الوركاء', list: '1' },
+            { code: 'A598', name: 'المنهل', sector: 'الوركاء', list: '1' }, { code: 'A599', name: 'الاجتهاد الابتدائية', sector: 'الوركاء', list: '1' },
+            { code: 'A600', name: 'الرواسي', sector: 'الوركاء', list: '1' }, { code: 'A601', name: 'انوار الهدى', sector: 'الوركاء', list: '1' },
+            { code: 'A602', name: 'بنت الهدى', sector: 'الوركاء', list: '1' }, { code: 'A603', name: 'جيل الريادة', sector: 'الوركاء', list: '1' },
+            { code: 'A604', name: 'الأقلام الواعدة', sector: 'الوركاء', list: '1' }, { code: 'A605', name: 'الاقتدار', sector: 'الوركاء', list: '1' },
+            // الوركاء 2
+            { code: 'B274', name: 'متوسطة التجدد للبنات', sector: 'الوركاء', list: '2' }, { code: 'B275', name: 'متوسطة حروف للبنات', sector: 'الوركاء', list: '2' },
+            { code: 'B276', name: 'اعدادية الوركاء المطورة للبنين', sector: 'الوركاء', list: '2' }, { code: 'B277', name: 'متوسطة الريادة للبنين', sector: 'الوركاء', list: '2' },
+            { code: 'B278', name: 'ثانوية ال جريب', sector: 'الوركاء', list: '2' }, { code: 'B279', name: 'متوسطة الثريا للبنات', sector: 'الوركاء', list: '2' },
+            { code: 'B280', name: 'اعدادية الوئام للبنات', sector: 'الوركاء', list: '2' }, { code: 'B281', name: 'متوسطة الصديقة الطاهرة للبنات', sector: 'الوركاء', list: '2' },
+            { code: 'B282', name: 'ثانوية انصار الحق للبنين', sector: 'الوركاء', list: '2' }, { code: 'B283', name: 'اعدادية الوركاء المهنية المختلطة', sector: 'الوركاء', list: '2' },
+            // الكرامة 1
+            { code: 'A606', name: 'أطفال الكرامه', sector: 'الكرامة', list: '1' }, { code: 'A607', name: 'البشير', sector: 'الكرامة', list: '1' },
+            { code: 'A608', name: 'البشائر', sector: 'الكرامة', list: '1' }, { code: 'A609', name: 'الرحمة', sector: 'الكرامة', list: '1' },
+            { code: 'A610', name: 'الغاية', sector: 'الكرامة', list: '1' }, { code: 'A611', name: 'الافنان', sector: 'الكرامة', list: '1' },
+            { code: 'A612', name: 'الوجدانية', sector: 'الكرامة', list: '1' }, { code: 'A613', name: 'الازكياء', sector: 'الكرامة', list: '1' },
+            { code: 'A614', name: 'ابو عبيدة بن الحارث', sector: 'الكرامة', list: '1' }, { code: 'A615', name: 'اليمن', sector: 'الكرامة', list: '1' },
+            { code: 'A616', name: 'الجنان', sector: 'الكرامة', list: '1' }, { code: 'A617', name: 'الرياض', sector: 'الكرامة', list: '1' },
+            { code: 'A618', name: 'الأعراف', sector: 'الكرامة', list: '1' }, { code: 'A619', name: 'الشيخ ستار', sector: 'الكرامة', list: '1' },
+            { code: 'A620', name: 'الايمان', sector: 'الكرامة', list: '1' }, { code: 'A621', name: 'الكرامة للبنين', sector: 'الكرامة', list: '1' },
+            { code: 'A622', name: 'نصب الحرية', sector: 'الكرامة', list: '1' }, { code: 'A623', name: 'المشكاة', sector: 'الكرامة', list: '1' },
+            { code: 'A624', name: 'الصابرين', sector: 'الكرامة', list: '1' }, { code: 'A625', name: 'اولي العزم', sector: 'الكرامة', list: '1' },
+            { code: 'A626', name: 'النخبة', sector: 'الكرامة', list: '1' }, { code: 'A627', name: 'الغفران', sector: 'الكرامة', list: '1' },
+            { code: 'A628', name: 'الطور', sector: 'الكرامة', list: '1' }, { code: 'A629', name: 'جنات النعيم', sector: 'الكرامة', list: '1' },
+            { code: 'A630', name: 'اليوم الموعود', sector: 'الكرامة', list: '1' }, { code: 'A631', name: 'اشراقة الصباح', sector: 'الكرامة', list: '1' },
+            { code: 'A632', name: 'شهداء الكرامة', sector: 'الكرامة', list: '1' },
+            // الكرامة 2
+            { code: 'B284', name: 'متوسطة راهب ال محمد للبنين', sector: 'الكرامة', list: '2' }, { code: 'B285', name: 'اعدادية  ام ابيها للبنات', sector: 'الكرامة', list: '2' },
+            { code: 'B286', name: 'اعدادية ابي تمام المختلطة', sector: 'الكرامة', list: '2' }, { code: 'B287', name: 'اعدادية الشيخ احمد الوائلي للبنين', sector: 'الكرامة', list: '2' },
+            { code: 'B288', name: 'متوسطة المجاهدعبد العزيز الحكيم المختلطة', sector: 'الكرامة', list: '2' }, { code: 'B289', name: 'متوسطة الابتهاج للبنات', sector: 'الكرامة', list: '2' },
+            { code: 'B290', name: 'متوسطة ابابيل للبنين', sector: 'الكرامة', list: '2' }, { code: 'B291', name: 'متوسطة شريفة بنت الحسن ع', sector: 'الكرامة', list: '2' },
+            { code: 'B292', name: 'متوسطة الرخاء للبنات', sector: 'الكرامة', list: '2' }, { code: 'B293', name: 'ثانوية الجيل الواعي', sector: 'الكرامة', list: '2' },
+            { code: 'B294', name: 'ثانوية الأفق للبنات', sector: 'الكرامة', list: '2' }, { code: 'B295', name: 'ثانوية القرطاس المختلطة', sector: 'الكرامة', list: '2' },
+            { code: 'B296', name: 'متوسطة النديم', sector: 'الكرامة', list: '2' }, { code: 'B297', name: 'اعدادية الكروان', sector: 'الكرامة', list: '2' },
+            { code: 'B298', name: 'متوسطة موسى الكليم للبنين', sector: 'الكرامة', list: '2' }, { code: 'B299', name: 'ثانوية بضعة المصطفى للبنات', sector: 'الكرامة', list: '2' }
+        ];
+
+        const MAX_CAPACITY_PER_SCHOOL = 4;
+
+        const DEPARTMENTS_DATA = {
+            basic: [
+                "رياض الاطفال - اساسية", "اللغة العربية - اساسية", "التاريخ - اساسية",
+                "العلــــــوم - اساسية", "الصفوف الاولى - اساسية", "الانكليزي - اساسية",
+                "الرياضيات - اساسية", "علوم قران - اساسية", "الارشاد التربوي - الاساسية"
+            ],
+            other: [
+                "اللغة العربية", "اللغة الانكليزية", "التاريخ", "الجغرافيا",
+                "علوم قران", "علوم الحياة", "الرياضيات", "التربية الفنية", "تربية علوم رياضية"
+            ]
+        };
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+            const navBtn = document.querySelector(`nav button[onclick="showPage('${pageId}')"]`);
+            if (navBtn) navBtn.classList.add('active');
+            if (pageId === 'school-selection') populateSchoolSelects();
+            if (pageId === 'review-page') populateReview();
+            if (pageId === 'admin-dashboard') loadAdminTable();
+        }
+
+        let currentStudent = {};
+
+        function toggleOtherUniversity() {
+            const univSelect = document.getElementById('student-university');
+            const otherGroup = document.getElementById('other-univ-group');
+            const otherInput = document.getElementById('student-other-university');
+            if (univSelect.value === 'خارج المحافظة') {
+                otherGroup.classList.remove('hidden');
+                otherInput.required = true;
+            } else {
+                otherGroup.classList.add('hidden');
+                otherInput.required = false;
+                otherInput.value = '';
+            }
+        }
+
+        function updateDepartments() {
+            const college = document.getElementById('student-college').value;
+            const deptSelect = document.getElementById('student-department');
+            deptSelect.innerHTML = '<option value="">اختر القسم</option>';
+            let options = (college === 'التربية الاساسية') ? DEPARTMENTS_DATA.basic : DEPARTMENTS_DATA.other;
+            options.forEach(dept => {
+                const opt = document.createElement('option');
+                opt.value = dept;
+                opt.textContent = dept;
+                deptSelect.appendChild(opt);
+            });
+        }
+
+        function saveStudentInfo() {
+            const univVal = document.getElementById('student-university').value;
+            let finalUnivName = univVal;
+            if (univVal === 'خارج المحافظة') {
+                const otherName = document.getElementById('student-other-university').value.trim();
+                if (!otherName) { showAlert('form-alert', 'يرجى كتابة اسم الجامعة في الحقل المخصص'); return; }
+                finalUnivName = otherName;
+            }
+            const fields = ['student-name', 'student-code', 'study-type', 'student-college', 'student-sector', 'student-department', 'student-gender'];
+            let valid = true;
+            fields.forEach(f => { if (!document.getElementById(f).value.trim()) valid = false; });
+            if (!univVal || !valid) { showAlert('form-alert', 'يرجى ملء جميع الحقول قبل الانتقال للمرحلة التالية'); return; }
+            currentStudent = {
+                name: document.getElementById('student-name').value.trim(),
+                code: document.getElementById('student-code').value.trim(),
+                university: finalUnivName,
+                studyType: document.getElementById('study-type').value,
+                college: document.getElementById('student-college').value,
+                sector: document.getElementById('student-sector').value,
+                department: document.getElementById('student-department').value,
+                gender: document.getElementById('student-gender').value
+            };
+            showAlert('form-alert', '✓ تم حفظ المعلومات بنجاح', true);
+            setTimeout(() => showPage('school-selection'), 800);
+        }
+
+        function getNormalizedDepartment(dept) {
+            if (!dept) return "";
+            let d = dept.trim();
+            d = d.replace(/\s*-\s*اساسية/g, '');
+            d = d.replace(/\s*-\s*الاساسية/g, '');
+            d = d.replace(/\s*-\s*اساسيه/g, '');
+            d = d.replace(/\s*-\s*الاساسيه/g, '');
+            if (d === "الانكليزي" || d === "اللغة الانكليزية") {
+                return "اللغة الانكليزية";
+            }
+            return d;
+        }
+
+        function checkSchoolAvailability(schoolCode, currentStudent, students) {
+            const currentDept = getNormalizedDepartment(currentStudent.department);
+
+            // حساب عدد الطلاب الذين اختاروا هذه المدرسة كخيار أول ولهم نفس القسم
+            const matchedStudents = students.filter(st => {
+                if (getNormalizedDepartment(st.department) !== currentDept) return false;
+                return st.school1Code === schoolCode;
+            });
+
+            // الشرط الوحيد: حد أقصى 4 طلاب من نفس القسم للمدرسة الواحدة كخيار أول
+            if (matchedStudents.length >= MAX_CAPACITY_PER_SCHOOL) {
+                return { available: false, reason: 'full', count: matchedStudents.length };
+            }
+
+            return { available: true, count: matchedStudents.length };
+        }
+
+        function populateSchoolSelects() {
+            const sector = currentStudent.sector;
+            const college = currentStudent.college;
+            const department = currentStudent.department;
+            if (!sector || !college || !department) { showAlert('school-alert', 'يرجى العودة واختيار القطاع والكلية والقسم أولاً'); return; }
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+            const normalizedDept = getNormalizedDepartment(department);
+            let schoolsInSector;
+
+            if ((college === 'التربية الانسانية' || college === 'التربية الاساسية') && normalizedDept === 'اللغة الانكليزية') {
+                schoolsInSector = SCHOOLS_DB.filter(s => s.sector === sector);
+            } else {
+                const listType = (college === 'التربية الاساسية') ? '1' : '2';
+                schoolsInSector = SCHOOLS_DB.filter(s => s.sector === sector && s.list === listType);
+            }
+
+            ['school-1', 'school-2', 'school-3'].forEach(id => {
+                const sel = document.getElementById(id);
+                // دائماً تصفير الاختيار السابق — كل طالب يبدأ من جديد
+                sel.innerHTML = '<option value="">اختر المدرسة</option>';
+                sel.value = '';
+
+                schoolsInSector.forEach(school => {
+                    const availability = checkSchoolAvailability(school.code, currentStudent, students);
+                    const opt = document.createElement('option');
+                    opt.value = school.code;
+                    opt.textContent = `${school.name} (${availability.count}/${MAX_CAPACITY_PER_SCHOOL})`;
+
+                    if (!availability.available) {
+                        // المدرسة ممتلئة — تظهر في القائمة لكن معطلة وملونة باللون الأحمر
+                        opt.disabled = true;
+                        opt.style.color = '#d32f2f';
+                        opt.style.backgroundColor = '#ffcdd2';
+                        opt.textContent = `✗ ${school.name} (${availability.count}/${MAX_CAPACITY_PER_SCHOOL} - مكتملة)`;
+                    }
+
+                    sel.appendChild(opt);
+                });
+            });
+            checkDuplicateSelection();
+        }
+
+        function checkDuplicateSelection() {
+            const s1 = document.getElementById('school-1').value;
+            const s2 = document.getElementById('school-2').value;
+            const s3 = document.getElementById('school-3').value;
+            ['school-1', 'school-2', 'school-3'].forEach(id => {
+                const sel = document.getElementById(id);
+                Array.from(sel.options).forEach(opt => {
+                    if (opt.value === '') return;
+                    const val = opt.value;
+                    const isSelectedElsewhere = (id !== 'school-1' && s1 === val) || (id !== 'school-2' && s2 === val) || (id !== 'school-3' && s3 === val);
+                    opt.disabled = isSelectedElsewhere;
+                });
+            });
+        }
+
+        function validateAndGoToSchools() { saveStudentInfo(); }
+
+        function validateAndProceed() {
+            const s1 = document.getElementById('school-1').value;
+            const s2 = document.getElementById('school-2').value;
+            const s3 = document.getElementById('school-3').value;
+            if (!s1 || !s2 || !s3) { showAlert('school-alert', 'يرجى اختيار المدارس الثلاث قبل الانتقال للمراجعة'); return; }
+            if (s1 === s2 || s1 === s3 || s2 === s3) { showAlert('school-alert', 'يجب أن تكون المدارس الثلاث مختلفة'); return; }
+
+            // تحقق نهائي: فقط رفض المدارس المكتملة (4/4)
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+            const selectedCodes = [s1, s2, s3];
+            for (const code of selectedCodes) {
+                const school = SCHOOLS_DB.find(s => s.code === code);
+                const availability = checkSchoolAvailability(code, currentStudent, students);
+                if (!availability.available) {
+                    showAlert('school-alert', `عذراً، المدرسة "${school.name}" مكتملة (${availability.count}/${MAX_CAPACITY_PER_SCHOOL}) ولا يمكن الاختيار منها.`);
+                    return;
+                }
+            }
+
+            currentStudent.school1Code = s1; currentStudent.school2Code = s2; currentStudent.school3Code = s3;
+            currentStudent.school1Name = SCHOOLS_DB.find(s => s.code === s1)?.name || '';
+            currentStudent.school2Name = SCHOOLS_DB.find(s => s.code === s2)?.name || '';
+            currentStudent.school3Name = SCHOOLS_DB.find(s => s.code === s3)?.name || '';
+            showPage('review-page');
+        }
+
+        function populateReview() {
+            document.getElementById('rev-name').textContent = currentStudent.name || '...';
+            document.getElementById('rev-code').textContent = currentStudent.code || '...';
+            document.getElementById('rev-univ').textContent = currentStudent.university || '...';
+            document.getElementById('rev-type').textContent = currentStudent.studyType || '...';
+            document.getElementById('rev-college').textContent = currentStudent.college || '...';
+            document.getElementById('rev-sector').textContent = currentStudent.sector || '...';
+            document.getElementById('rev-dept').textContent = currentStudent.department || '...';
+            document.getElementById('rev-gender').textContent = currentStudent.gender || '...';
+            document.getElementById('rev-s1').textContent = currentStudent.school1Name || '...';
+            document.getElementById('rev-s2').textContent = currentStudent.school2Name || '...';
+            document.getElementById('rev-s3').textContent = currentStudent.school3Name || '...';
+        }
+
+        function resetForm() {
+            // Clear all inputs and selects in student-form
+            document.querySelectorAll('#student-form input, #student-form select').forEach(el => el.value = '');
+            document.getElementById('other-univ-group').classList.add('hidden');
+
+            // Reset department dropdown options to initial state
+            const deptSelect = document.getElementById('student-department');
+            if (deptSelect) {
+                deptSelect.innerHTML = '<option value="">يرجى اختيار الكلية أولاً</option>';
+            }
+
+            // Reset school dropdowns and values
+            ['school-1', 'school-2', 'school-3'].forEach(id => {
+                const sel = document.getElementById(id);
+                if (sel) {
+                    sel.innerHTML = '<option value="">اختر المدرسة</option>';
+                    sel.value = '';
+                }
+            });
+
+            // Reset review values
+            const reviewFields = ['rev-name', 'rev-code', 'rev-univ', 'rev-type', 'rev-college', 'rev-sector', 'rev-dept', 'rev-gender', 'rev-s1', 'rev-s2', 'rev-s3'];
+            reviewFields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = '...';
+            });
+
+            // Clear current student object
+            currentStudent = {};
+        }
+
+        function submitApplication() {
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+            const sentName = currentStudent.name || '';
+            students.push(currentStudent);
+            localStorage.setItem('students', JSON.stringify(students));
+            showSuccessOverlay(sentName);
+        }
+
+        function showSuccessOverlay(name) {
+            document.getElementById('sent-student-name').textContent =
+                name ? `الطالب: ${name}` : '';
+            document.getElementById('success-overlay').classList.add('show');
+        }
+
+        function startNewStudent() {
+            document.getElementById('success-overlay').classList.remove('show');
+            resetForm();
+            showPage('student-form');
+        }
+
+        async function adminLogin() {
+            const email = document.getElementById('admin-email').value.trim();
+            const pass = document.getElementById('admin-pass').value;
+            if (!email || !pass) { showAlert('login-alert', 'يرجى إدخال البريد الإلكتروني وكلمة المرور'); return; }
+
+            const btn = document.getElementById('login-btn');
+            const originalText = btn.textContent;
+            btn.textContent = 'جاري تسجيل الدخول... ⏳';
+            btn.disabled = true;
+
+            try {
+                await firebase.auth().signInWithEmailAndPassword(email, pass);
+                showPage('admin-dashboard');
+            } catch (error) {
+                let msg = 'حدث خطأ أثناء تسجيل الدخول';
+                switch (error.code) {
+                    case 'auth/user-not-found': msg = 'لا يوجد حساب بهذا البريد الإلكتروني'; break;
+                    case 'auth/wrong-password': msg = 'كلمة المرور غير صحيحة'; break;
+                    case 'auth/invalid-email': msg = 'البريد الإلكتروني غير صالح'; break;
+                    case 'auth/too-many-requests': msg = 'تم تجاوز عدد المحاولات المسموحة. حاول لاحقاً'; break;
+                    case 'auth/invalid-credential': msg = 'البريد الإلكتروني أو كلمة المرور غير صحيحة'; break;
+                }
+                showAlert('login-alert', msg);
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        async function resetPassword() {
+            const email = document.getElementById('admin-email').value.trim();
+            if (!email) { showAlert('login-alert', 'يرجى إدخال البريد الإلكتروني أولاً ثم الضغط على نسيت كلمة المرور'); return; }
+            try {
+                await firebase.auth().sendPasswordResetEmail(email);
+                showAlert('login-alert', '✅ تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني', true);
+            } catch (error) {
+                let msg = 'حدث خطأ أثناء إرسال رابط إعادة التعيين';
+                if (error.code === 'auth/user-not-found') msg = 'لا يوجد حساب بهذا البريد الإلكتروني';
+                if (error.code === 'auth/invalid-email') msg = 'البريد الإلكتروني غير صالح';
+                showAlert('login-alert', msg);
+            }
+        }
+        function loadAdminTable() {
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+            document.getElementById('total-records').textContent = students.length;
+            const tbody = document.querySelector('#admin-table tbody');
+            tbody.innerHTML = '';
+            students.forEach((s, i) => {
+                tbody.innerHTML += `<tr><td>${i + 1}</td><td>${s.name}</td><td>${s.code}</td><td>${s.university}</td><td>${s.college}</td><td>${s.department}</td><td>${s.sector}</td><td>${s.studyType}</td><td>${s.gender}</td><td>${s.school1Name}</td><td>${s.school2Name}</td><td>${s.school3Name}</td></tr>`;
+            });
+        }
+        async function logoutAdmin() {
+            try {
+                await firebase.auth().signOut();
+            } catch (e) { console.error('Logout error:', e); }
+            document.getElementById('admin-email').value = '';
+            document.getElementById('admin-pass').value = '';
+            showPage('admin-login');
+        }
+        function clearAllData() { if (confirm('هل أنت متأكد من مسح جميع المعلومات المدخلة؟')) { localStorage.removeItem('students'); loadAdminTable(); alert('تم المسح'); } }
+        function exportToExcel() {
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+            let csv = '\uFEFF#,الاسم,الكود,الجامعة,الكلية,القسم,القطاع,الدراسة,الجنس,خيار1,خيار2,خيار3\n';
+            students.forEach((s, i) => csv += `${i + 1},${s.name},${s.code},${s.university},${s.college},${s.department},${s.sector},${s.studyType},${s.gender},${s.school1Name},${s.school2Name},${s.school3Name}\n`);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'تقرير_المطبقين.csv'; link.click();
+        }
+        function exportToWord() {
+            const table = document.getElementById("admin-table");
+            const html = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+        <head>
+            <meta charset="utf-8">
+            <title>التقرير التراكمي</title>
+            <style>
+                @page WordSection1 {
+                    size: 841.9pt 595.3pt; /* A4 landscape */
+                    mso-page-orientation: landscape;
+                    margin: 1.0in 1.0in 1.0in 1.0in;
+                }
+                div.WordSection1 { page: WordSection1; }
+                table { border-collapse: collapse; width: 100%; direction: rtl; font-family: 'Arial', sans-serif; font-size: 12px; }
+                th, td { border: 1px solid black; padding: 5px; text-align: center; }
+                th { background-color: #003366; color: white; }
+            </style>
+        </head>
+        <body>
+            <div class="WordSection1">
+                <h2 style="text-align: center; color: #003366; direction: rtl; font-family: 'Arial', sans-serif;">التقرير التراكمي للمطبقين</h2>
+                ${table.outerHTML}
+            </div>
+        </body>
+        </html>`;
+
+            const blob = new Blob(['\uFEFF', html], { type: 'application/msword' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'التقرير_التراكمي.doc';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        let currentPrincipalFiltered = [];
+
+        function principalSearch() {
+            const code = document.getElementById('principal-code-input').value.trim().toLowerCase();
+            if (!code) { showAlert('principal-alert', 'يرجى إدخال كود المدرسة'); return; }
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+            const schoolInfo = SCHOOLS_DB.find(s => s.code.toLowerCase() === code);
+            if (!schoolInfo) { showAlert('principal-alert', 'عذراً، لم يتم العثور على مدرسة بهذا الكود.'); return; }
+
+            const filtered = students.filter(s => s.school1Code === schoolInfo.code);
+            filtered.forEach(s => {
+                s.matchedOption = 'الخيار الأول';
+            });
+
+            currentPrincipalFiltered = filtered;
+            document.getElementById('principal-school-title').textContent = `📋 قائمة مطبقي: ${schoolInfo.name}`;
+            document.getElementById('print-school-name-header').textContent = schoolInfo.name;
+            document.getElementById('principal-count').textContent = `عدد الطلاب المسجلين: ${filtered.length} طالب/طالبة`;
+
+            const tbody1 = document.querySelector('#principal-table tbody');
+            tbody1.innerHTML = '';
+            if (filtered.length === 0) {
+                tbody1.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:#999;">لا يوجد طلاب مسجلين لهذه المدرسة حالياً</td></tr>';
+            } else {
+                filtered.forEach((s, i) => {
+                    tbody1.innerHTML += `<tr><td>${i + 1}</td><td>${s.name}</td><td>${s.university}</td><td>${s.college}</td><td>${s.department}</td><td>${s.studyType}</td><td>${s.gender}</td><td><span style="background:#d35400;color:white;padding:2px 8px;border-radius:12px;font-size:0.85rem;">${s.matchedOption}</span></td></tr>`;
+                });
+            }
+
+            const tbody2 = document.querySelector('#principal-dates-table tbody');
+            tbody2.innerHTML = '';
+            const savedDates = JSON.parse(localStorage.getItem('principal_dates_' + code)) || {};
+            if (filtered.length === 0) {
+                tbody2.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:2rem;color:#999;">لا توجد بيانات</td></tr>';
+            } else {
+                filtered.forEach((s, i) => {
+                    const startKey = s.code + '_start';
+                    const endKey = s.code + '_end';
+                    tbody2.innerHTML += `<tr>
+                    <td>${i + 1}</td><td>${s.name}</td><td>${s.university}</td><td>${s.college}</td><td>${s.department}</td><td>${s.studyType}</td><td>${s.gender}</td>
+                    <td><input type="text" class="date-input" data-key="${startKey}" value="${savedDates[startKey] || ''}" placeholder="__/__/____" style="width:100%;border:1px solid #ccc;padding:4px;border-radius:4px;"></td>
+                    <td><input type="text" class="date-input" data-key="${endKey}" value="${savedDates[endKey] || ''}" placeholder="__/__/____" style="width:100%;border:1px solid #ccc;padding:4px;border-radius:4px;"></td>
+                </tr>`;
+                });
+            }
+            showPage('principal-results');
+        }
+
+        function saveDatesCumulative() {
+            const code = document.getElementById('principal-code-input').value.trim().toLowerCase();
+            if (!code) return;
+            const inputs = document.querySelectorAll('#principal-dates-table .date-input');
+            const savedDates = JSON.parse(localStorage.getItem('principal_dates_' + code)) || {};
+            inputs.forEach(input => { savedDates[input.getAttribute('data-key')] = input.value; });
+            localStorage.setItem('principal_dates_' + code, JSON.stringify(savedDates));
+            showAlert('principal-alert', '✅ تم حفظ التواريخ بنجاح!', true);
+        }
+
+        async function sendDatesToAdmin() {
+            const code = document.getElementById('principal-code-input').value.trim().toLowerCase();
+            if (!code) { showAlert('principal-alert', 'يرجى إدخال كود المدرسة'); return; }
+
+            saveDatesCumulative(); // حفظ محلياً أولاً
+            const savedDates = JSON.parse(localStorage.getItem('principal_dates_' + code)) || {};
+
+            const schoolInfo = SCHOOLS_DB.find(s => s.code.toLowerCase() === code);
+            if (!schoolInfo) return;
+
+            const records = currentPrincipalFiltered.map(s => ({
+                schoolCode: schoolInfo.code,
+                schoolName: schoolInfo.name,
+                studentName: s.name,
+                studentCode: s.code,
+                university: s.university,
+                college: s.college,
+                department: s.department,
+                studyType: s.studyType,
+                startDate: savedDates[s.code + '_start'] || '',
+                endDate: savedDates[s.code + '_end'] || ''
+            }));
+
+            try {
+                const btn = event.target;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = 'جاري الإرسال... ⏳';
+                btn.disabled = true;
+
+                await db.ref('school_dates/' + schoolInfo.code).set(records);
+
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                showAlert('principal-alert', '✅ تم إرسال التواريخ للإدارة بنجاح!', true);
+            } catch (e) {
+                console.error(e);
+                showAlert('principal-alert', '❌ حدث خطأ أثناء الإرسال: ' + e.message);
+            }
+        }
+
+        function printTable1() {
+            document.querySelector('.print-header').style.display = 'flex';
+            document.querySelector('.print-footer').style.display = 'block';
+            const table2Wrapper = document.querySelectorAll('.print-table-wrapper')[1];
+            const originalDisplay = table2Wrapper.style.display;
+            table2Wrapper.style.display = 'none';
+            window.print();
+            setTimeout(() => {
+                table2Wrapper.style.display = originalDisplay || '';
+                document.querySelector('.print-header').style.display = 'none';
+                document.querySelector('.print-footer').style.display = 'none';
+            }, 500);
+        }
+
+        function printTable2() {
+            saveDatesCumulative();
+            document.querySelector('.print-header').style.display = 'flex';
+            document.querySelector('.print-footer').style.display = 'block';
+            const table1Wrapper = document.querySelectorAll('.print-table-wrapper')[0];
+            const originalDisplay = table1Wrapper.style.display;
+            table1Wrapper.style.display = 'none';
+            window.print();
+            setTimeout(() => {
+                table1Wrapper.style.display = originalDisplay || '';
+                document.querySelector('.print-header').style.display = 'none';
+                document.querySelector('.print-footer').style.display = 'none';
+            }, 500);
+        }
+
+        function showAlert(id, msg, isSuccess = false) {
+            const el = document.getElementById(id);
+            el.style.display = 'block';
+            el.style.backgroundColor = isSuccess ? '#d4edda' : '#ffebee';
+            el.style.color = isSuccess ? '#155724' : '#c62828';
+            el.style.borderColor = isSuccess ? '#c3e6cb' : '#ffcdd2';
+            el.textContent = msg;
+            if (!isSuccess) setTimeout(() => el.style.display = 'none', 4000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => showPage('student-form'));
+    </script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <script>
+        // --- Firebase Integration ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCZ1fpRVevSxSDZD5YnaxFMpSr6lpWiuXw",
+            authDomain: "collstudents.firebaseapp.com",
+            projectId: "collstudents",
+            storageBucket: "collstudents.firebasestorage.app",
+            messagingSenderId: "757968530048",
+            appId: "1:757968530048:web:c355fca1bbc415f3a09465",
+            databaseURL: "https://collstudents-default-rtdb.europe-west1.firebasedatabase.app"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const auth = firebase.auth();
+
+        // مراقب حالة المصادقة - يتحقق تلقائياً إذا كان الأدمن مسجل دخول
+        auth.onAuthStateChanged(user => {
+            const adminNav = document.querySelector('nav button[onclick="showPage(\'admin-login\')"]');
+            if (user) {
+                // المستخدم مسجل دخول - يظهر زر لوحة التحكم
+                if (adminNav) adminNav.style.display = '';
+            } else {
+                // المستخدم غير مسجل - التأكد من عدم الوصول للوحة التحكم
+                const dashboard = document.getElementById('admin-dashboard');
+                if (dashboard && dashboard.classList.contains('active')) {
+                    showPage('student-form');
+                }
+            }
+        });
+
+        async function syncData() {
+            try {
+                const snapshot = await db.ref('students').once('value');
+                const students = [];
+                snapshot.forEach(child => {
+                    students.push(child.val());
+                });
+                localStorage.setItem('students', JSON.stringify(students));
+                return students;
+            } catch (e) {
+                console.error("Firebase fetch error", e);
+                return JSON.parse(localStorage.getItem('students')) || [];
+            }
+        }
+
+        // Override original submitApplication
+        window.submitApplication = async function () {
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'جاري الإرسال... ⏳';
+            btn.disabled = true;
+
+            const sentName = currentStudent.name || '';
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+            students.push(currentStudent);
+            localStorage.setItem('students', JSON.stringify(students));
+
+            try {
+                await db.ref('students').push(currentStudent);
+            } catch (e) {
+                console.error("Firebase write error", e);
+            }
+
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+
+            showSuccessOverlay(sentName);
+        }
+
+        // Override loadAdminTable
+        window.loadAdminTable = async function () {
+            const tbody = document.querySelector('#admin-table tbody');
+            tbody.innerHTML = '<tr><td colspan="12" style="text-align:center; padding: 2rem; font-weight:bold;">جاري جلب البيانات من قاعدة البيانات... ⏳</td></tr>';
+
+            const students = await syncData();
+            document.getElementById('total-records').textContent = students.length;
+            tbody.innerHTML = '';
+
+            if (students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="12" style="text-align:center; padding: 2rem;">لا توجد بيانات مسجلة حالياً</td></tr>';
+            } else {
+                students.forEach((s, i) => {
+                    tbody.innerHTML += `<tr><td>${i + 1}</td><td>${s.name}</td><td>${s.code}</td><td>${s.university}</td><td>${s.college}</td><td>${s.department}</td><td>${s.sector}</td><td>${s.studyType}</td><td>${s.gender}</td><td>${s.school1Name}</td><td>${s.school2Name}</td><td>${s.school3Name}</td></tr>`;
+                });
+            }
+
+            await loadDatesTable();
+        }
+
+        window.loadDatesTable = async function () {
+            const tbody = document.querySelector('#admin-dates-table tbody');
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding: 2rem; font-weight:bold;">جاري جلب البيانات... ⏳</td></tr>';
+
+            try {
+                const snapshot = await db.ref('school_dates').once('value');
+                const data = snapshot.val();
+                tbody.innerHTML = '';
+
+                let allRecords = [];
+                if (data) {
+                    Object.values(data).forEach(schoolRecords => {
+                        if (Array.isArray(schoolRecords)) {
+                            allRecords = allRecords.concat(schoolRecords);
+                        } else {
+                            Object.values(schoolRecords).forEach(rec => allRecords.push(rec));
+                        }
+                    });
+                }
+
+                document.getElementById('total-dates-records').textContent = allRecords.length;
+
+                if (allRecords.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding: 2rem;">لا توجد بيانات مسجلة حالياً</td></tr>';
+                    return;
+                }
+
+                allRecords.forEach((s, i) => {
+                    tbody.innerHTML += `<tr><td>${i + 1}</td><td>${s.schoolName}</td><td>${s.studentName}</td><td>${s.university}</td><td>${s.college}</td><td>${s.department}</td><td>${s.studyType}</td><td>${s.startDate}</td><td>${s.endDate}</td></tr>`;
+                });
+            } catch (e) {
+                console.error("Error fetching dates", e);
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 2rem; color:red;">حدث خطأ: ${e.message}</td></tr>`;
+            }
+        }
+
+        window.exportDatesToExcel = function () {
+            const tbody = document.querySelector('#admin-dates-table tbody');
+            let csv = '\uFEFF#,اسم المدرسة,اسم الطالب الرباعي,الجامعة,الكلية,القسم,نوع الدراسة,تاريخ المباشرة,تاريخ الانفكاك\n';
+            Array.from(tbody.rows).forEach(row => {
+                if (row.cells.length < 9) return;
+                const rowData = Array.from(row.cells).map(c => `"${c.textContent.replace(/"/g, '""')}"`);
+                csv += rowData.join(',') + '\n';
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'جدول_المباشرة_والانفكاك_المجمع.csv';
+            link.click();
+        }
+
+        window.clearDatesData = async function () {
+            if (confirm('هل أنت متأكد من مسح جميع التواريخ المرسلة من المدارس بشكل نهائي؟')) {
+                try {
+                    await db.ref('school_dates').remove();
+                    loadDatesTable();
+                    alert('تم مسح بيانات التواريخ بنجاح.');
+                } catch (e) {
+                    alert('حدث خطأ أثناء المسح: ' + e.message);
+                }
+            }
+        }
+
+        // Override principalSearch
+        window.principalSearch = async function () {
+            const code = document.getElementById('principal-code-input').value.trim().toLowerCase();
+            if (!code) { showAlert('principal-alert', 'يرجى إدخال كود المدرسة'); return; }
+
+            document.getElementById('principal-school-title').textContent = `جاري المزامنة مع قاعدة البيانات... ⏳`;
+            await syncData();
+
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+            const schoolInfo = SCHOOLS_DB.find(s => s.code.toLowerCase() === code);
+            if (!schoolInfo) { showAlert('principal-alert', 'عذراً، لم يتم العثور على مدرسة بهذا الكود.'); document.getElementById('principal-school-title').textContent = ''; return; }
+
+            const filtered = students.filter(s => s.school1Code === schoolInfo.code);
+            filtered.forEach(s => {
+                s.matchedOption = 'الخيار الأول';
+            });
+
+            currentPrincipalFiltered = filtered;
+            document.getElementById('principal-school-title').textContent = `📋 قائمة مطبقي: ${schoolInfo.name}`;
+            document.getElementById('print-school-name-header').textContent = schoolInfo.name;
+            document.getElementById('principal-count').textContent = `عدد الطلاب المسجلين: ${filtered.length} طالب/طالبة`;
+
+            const tbody1 = document.querySelector('#principal-table tbody');
+            tbody1.innerHTML = '';
+            if (filtered.length === 0) {
+                tbody1.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:#999;">لا يوجد طلاب مسجلين لهذه المدرسة حالياً</td></tr>';
+            } else {
+                filtered.forEach((s, i) => {
+                    tbody1.innerHTML += `<tr><td>${i + 1}</td><td>${s.name}</td><td>${s.university}</td><td>${s.college}</td><td>${s.department}</td><td>${s.studyType}</td><td>${s.gender}</td><td><span style="background:#d35400;color:white;padding:2px 8px;border-radius:12px;font-size:0.85rem;">${s.matchedOption}</span></td></tr>`;
+                });
+            }
+
+            const tbody2 = document.querySelector('#principal-dates-table tbody');
+            tbody2.innerHTML = '';
+            const savedDates = JSON.parse(localStorage.getItem('principal_dates_' + code)) || {};
+            if (filtered.length === 0) {
+                tbody2.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:2rem;color:#999;">لا توجد بيانات</td></tr>';
+            } else {
+                filtered.forEach((s, i) => {
+                    const startKey = s.code + '_start';
+                    const endKey = s.code + '_end';
+                    tbody2.innerHTML += `<tr>
+                    <td>${i + 1}</td><td>${s.name}</td><td>${s.university}</td><td>${s.college}</td><td>${s.department}</td><td>${s.studyType}</td><td>${s.gender}</td>
+                    <td><input type="text" class="date-input" data-key="${startKey}" value="${savedDates[startKey] || ''}" placeholder="__/__/____" style="width:100%;border:1px solid #ccc;padding:4px;border-radius:4px;"></td>
+                    <td><input type="text" class="date-input" data-key="${endKey}" value="${savedDates[endKey] || ''}" placeholder="__/__/____" style="width:100%;border:1px solid #ccc;padding:4px;border-radius:4px;"></td>
+                </tr>`;
+                });
+            }
+            showPage('principal-results');
+        }
+
+        // Override clearAllData
+        window.clearAllData = async function () {
+            if (confirm('تحذير: سيتم مسح جميع البيانات من قاعدة البيانات نهائياً! هل أنت متأكد؟')) {
+                try {
+                    await db.ref('students').remove();
+                    localStorage.removeItem('students');
+                    loadAdminTable();
+                    alert('تم مسح جميع البيانات من الخادم بنجاح.');
+                } catch (e) {
+                    alert('حدث خطأ أثناء المسح: ' + e.message);
+                }
+            }
+        }
+
+        // Initial background sync
+        window.addEventListener('load', syncData);
+    </script>
+</body>
+
+</html>

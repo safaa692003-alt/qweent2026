@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تواصل الجامعات - قسم الاعداد والتدريب</title>
+    <!-- Google Fonts for beautiful Arabic typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* CSS to match the main page header */
+        header {
+            background-color: #003366 !important;
+            color: white !important;
+            padding: 1rem 15rem !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            border-bottom: 4px solid #002244 !important;
+        }
+
+        .header-title h1 {
+            font-size: 1.2rem;
+            margin-bottom: 0.2rem;
+            text-shadow: none !important;
+        }
+
+        .header-title p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            font-weight: normal;
+        }
+
+        .logo-placeholder {
+            width: 90px;
+            height: 90px;
+            background: transparent;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .logo-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 0 !important;
+        }
+
+        @media (max-width: 1024px) {
+            header {
+                padding: 1rem !important;
+                flex-direction: column !important;
+                gap: 1rem;
+                text-align: center;
+            }
+            .header-title {
+                text-align: center !important;
+            }
+        }
+
+        /* Fix for shaking/jumping */
+        body {
+            overflow-y: scroll !important; /* Forces scrollbar to stay, preventing horizontal jumps */
+            height: auto !important;
+        }
+        
+        .page-container {
+            animation: none !important; /* Disable fade-in animation that causes vertical jumping */
+            min-height: auto !important;
+        }
+        
+        /* Fix admin table height and text wrapping */
+        .dashboard-grid {
+            height: auto !important;
+            min-height: 400px;
+        }
+        .data-table td, .data-table th {
+            white-space: normal !important;
+            line-height: 1.6;
+            vertical-align: middle;
+        }
+        .table-container-wrapper {
+            min-height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header matched to main page -->
+    <header>
+        <div class="header-title" style="text-align: right;">
+            <h1>وزارة التربية</h1>
+            <p>مديرية تربية المثنى</p>
+        </div>
+
+        <div class="logo-placeholder">
+            <img src="logo1.png" alt="شعار النظام">
+        </div>
+
+        <div class="header-title" style="text-align: left;">
+            <h1>قسم الإعداد والتدريب</h1>
+            <p>تواصل الجامعات</p>
+        </div>
+    </header>
+
+    <!-- Navigation Bar -->
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="index.html" class="btn btn-secondary"><i class="fa-solid fa-house"></i> العودة للرئيسية (توزيع المطبقين)</a>
+    </div>
+
+    <!-- Login Page -->
+    <main id="login-page" class="page-container active">
+        <div class="upload-card glass-panel" style="max-width: 400px; margin: 0 auto;">
+            <div class="upload-icon-container" style="background: var(--primary-blue); color: white;">
+                <i class="fa-solid fa-right-to-bracket fa-3x" style="padding: 25px;"></i>
+            </div>
+            <h3 class="upload-heading">تسجيل الدخول</h3>
+            <p class="upload-description">الرجاء إدخال اسم المستخدم وكلمة المرور الخاصة بالجامعة أو الإدارة</p>
+            
+            <div id="login-error" class="empty-state" style="display: none; padding: 10px; margin-bottom: 15px; color: red;">
+                <i class="fa-solid fa-circle-exclamation"></i> بيانات الدخول غير صحيحة!
+            </div>
+
+            <div class="form-group" style="text-align: right;">
+                <label>اسم المستخدم:</label>
+                <input type="text" id="username-input" class="form-control" placeholder="أدخل اسم المستخدم...">
+            </div>
+            
+            <div class="form-group" style="text-align: right;">
+                <label>كلمة المرور:</label>
+                <input type="password" id="password-input" class="form-control" placeholder="أدخل كلمة المرور...">
+            </div>
+            
+            <button id="login-btn" class="btn btn-primary btn-large btn-full mt-4">
+                تسجيل الدخول
+            </button>
+        </div>
+    </main>
+
+    <!-- Admin Dashboard -->
+    <main id="admin-page" class="page-container" style="display: none;">
+        <div class="glass-panel" style="max-width: 900px; margin: 0 auto;">
+            <div class="content-header">
+                <h3 style="color: var(--primary-blue);"><i class="fa-solid fa-shield-halved"></i> لوحة تحكم الإدارة</h3>
+                <button id="logout-admin-btn" class="btn btn-secondary btn-sm">
+                    <i class="fa-solid fa-right-from-bracket"></i> تسجيل خروج
+                </button>
+            </div>
+            
+            <div class="dashboard-grid" style="grid-template-columns: 1fr; margin-top: 20px;">
+                <!-- Add New University Form -->
+                <div class="glass-panel" style="background: rgba(255, 255, 255, 0.4);">
+                    <h4 style="margin-bottom: 15px;"><i class="fa-solid fa-plus"></i> إضافة جامعة جديدة</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label>اسم الجامعة:</label>
+                            <input type="text" id="new-uni-name" class="form-control" placeholder="مثال: جامعة بغداد">
+                        </div>
+                        <div class="form-group">
+                            <label>اسم المستخدم:</label>
+                            <input type="text" id="new-uni-user" class="form-control" placeholder="يوزرنيم الدخول">
+                        </div>
+                        <div class="form-group">
+                            <label>كلمة المرور:</label>
+                            <input type="text" id="new-uni-pass" class="form-control" placeholder="كلمة المرور">
+                        </div>
+                        <div class="form-group">
+                            <label>الكليات (مفصولة بفاصلة):</label>
+                            <input type="text" id="new-uni-colleges" class="form-control" placeholder="التربية, الهندسة, العلوم">
+                        </div>
+                    </div>
+                    <button id="add-uni-btn" class="btn btn-success mt-3"><i class="fa-solid fa-check"></i> حفظ الجامعة</button>
+                </div>
+
+                <!-- Universities List -->
+                <div class="table-container-wrapper mt-4">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                        <h4 style="margin: 0;"><i class="fa-solid fa-building-columns"></i> قائمة الجامعات المسجلة</h4>
+                        <div style="position: relative; max-width: 300px; width: 100%;">
+                            <i class="fa-solid fa-search" style="position: absolute; right: 10px; top: 12px; color: #888;"></i>
+                            <input type="text" id="admin-search" class="form-control" style="padding-right: 35px;" placeholder="بحث باسم الجامعة...">
+                        </div>
+                    </div>
+                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>اسم الجامعة</th>
+                                    <th>اسم المستخدم</th>
+                                    <th>كلمة المرور</th>
+                                    <th>الكليات</th>
+                                    <th>إجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-universities-list">
+                                <!-- Data injected via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Admin Files View Section -->
+                <div class="glass-panel mt-4" style="background: rgba(255, 255, 255, 0.6);">
+                    <h4 style="margin-bottom: 15px;"><i class="fa-solid fa-folder-tree text-blue"></i> سجل الملفات المرفوعة (حفظ تراكمي)</h4>
+                    <p style="color: #666; font-size: 0.9rem; margin-bottom: 15px;">في هذا القسم تظهر جميع الملفات المرفوعة من قبل جميع الجامعات، مقسمة حسب الكلية.</p>
+                    <div id="admin-files-container" style="display: flex; flex-direction: column; gap: 15px;">
+                        <!-- Data injected via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- University Dashboard -->
+    <main id="university-page" class="page-container" style="display: none;">
+        <div class="glass-panel" style="max-width: 900px; margin: 0 auto;">
+            <div class="content-header">
+                <h3 style="color: var(--primary-blue);" id="uni-welcome-title"><i class="fa-solid fa-building-columns"></i> لوحة تحكم الجامعة</h3>
+                <button id="logout-uni-btn" class="btn btn-secondary btn-sm">
+                    <i class="fa-solid fa-right-from-bracket"></i> تسجيل خروج
+                </button>
+            </div>
+            
+            <div class="mt-4">
+                <h4 style="margin-bottom: 15px; color: #333;">كليات الجامعة (رفع الملفات):</h4>
+                <div id="uni-colleges-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+                    <!-- Data injected via JS -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer mt-4">
+        <p>تصميم وبرمجة م.م صفاء هادي عبد العالي مدير قسم الاعداد والتدريب - تربية المثنى 2026</p>
+    </footer>
+
+    <!-- Firebase SDK (Compat version for local file:// usage) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-storage-compat.js"></script>
+
+    <!-- App Logic -->
+    <script src="universities.js"></script>
+</body>
+</html>
