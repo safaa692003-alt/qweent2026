@@ -774,9 +774,9 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>القطاع</label>
+                        <label>القطاع (المنطقة )</label>
                         <select id="student-sector">
-                            <option value="">اختر القطاع</option>
+                            <option value="">اختر القطاع (المنطقة)</option>
                             <option value="السماوة">السماوة</option>
                             <option value="الخضر">الخضر</option>
                             <option value="الرميثة">الرميثة</option>
@@ -1599,6 +1599,14 @@
         };
 
         function showPage(pageId) {
+            if (pageId === 'admin-dashboard') {
+                const isLocalAdmin = sessionStorage.getItem('isAdminLoggedIn') === 'true';
+                const isFbAdmin = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser);
+                if (!isLocalAdmin && !isFbAdmin) {
+                    showPage('admin-login');
+                    return;
+                }
+            }
             document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
@@ -1671,10 +1679,25 @@
             d = d.replace(/\s*-\s*الاساسية/g, '');
             d = d.replace(/\s*-\s*اساسيه/g, '');
             d = d.replace(/\s*-\s*الاساسيه/g, '');
-            if (d === "الانكليزي" || d === "اللغة الانكليزية") {
+            d = d.replace(/^قسم\s+/, '');
+            if (d === "الانكليزي" || d === "اللغة الانكليزية" || d === "الإنكليزي" || d === "اللغة الإنكليزية") {
                 return "اللغة الانكليزية";
             }
             return d;
+        }
+
+        function getMaxCapacityPerSchool(student) {
+            if (!student) return MAX_CAPACITY_PER_SCHOOL;
+            const college = (student.college || '').trim();
+            const dept = getNormalizedDepartment(student.department);
+            // تعديل الطاقة الاستيعابية: كلية التربية الانسانية - قسم اللغة الانكليزية تكون 5 مطبقين بدلاً من 4
+            const isHumanities = (college === 'التربية الانسانية' || college === 'التربية الإنسانية' || college.includes('الانسانية') || college.includes('الإنسانية'));
+            const isEnglish = (dept === 'اللغة الانكليزية');
+
+            if (isHumanities && isEnglish) {
+                return 5;
+            }
+            return MAX_CAPACITY_PER_SCHOOL;
         }
 
         function checkSchoolAvailability(schoolCode, currentStudent, students) {
@@ -1686,12 +1709,13 @@
                 return st.school1Code === schoolCode;
             });
 
-            // الشرط الوحيد: حد أقصى 4 طلاب من نفس القسم للمدرسة الواحدة كخيار أول
-            if (matchedStudents.length >= MAX_CAPACITY_PER_SCHOOL) {
-                return { available: false, reason: 'full', count: matchedStudents.length };
+            const maxCapacity = getMaxCapacityPerSchool(currentStudent);
+
+            if (matchedStudents.length >= maxCapacity) {
+                return { available: false, reason: 'full', count: matchedStudents.length, maxCapacity: maxCapacity };
             }
 
-            return { available: true, count: matchedStudents.length };
+            return { available: true, count: matchedStudents.length, maxCapacity: maxCapacity };
         }
 
         function populateSchoolSelects() {
@@ -1720,14 +1744,15 @@
                     const availability = checkSchoolAvailability(school.code, currentStudent, students);
                     const opt = document.createElement('option');
                     opt.value = school.code;
-                    opt.textContent = `${school.name} (${availability.count}/${MAX_CAPACITY_PER_SCHOOL})`;
+                    opt.textContent = `${school.name} (${availability.count}/${availability.maxCapacity})`;
 
                     if (!availability.available) {
                         // المدرسة ممتلئة — تظهر في القائمة لكن معطلة وملونة باللون الأحمر
                         opt.disabled = true;
+                        opt.dataset.full = 'true';
                         opt.style.color = '#d32f2f';
                         opt.style.backgroundColor = '#ffcdd2';
-                        opt.textContent = `✗ ${school.name} (${availability.count}/${MAX_CAPACITY_PER_SCHOOL} - مكتملة)`;
+                        opt.textContent = `✗ ${school.name} (${availability.count}/${availability.maxCapacity} - مكتملة)`;
                     }
 
                     sel.appendChild(opt);
@@ -1746,7 +1771,8 @@
                     if (opt.value === '') return;
                     const val = opt.value;
                     const isSelectedElsewhere = (id !== 'school-1' && s1 === val) || (id !== 'school-2' && s2 === val) || (id !== 'school-3' && s3 === val);
-                    opt.disabled = isSelectedElsewhere;
+                    const isFull = opt.dataset.full === 'true';
+                    opt.disabled = isFull || isSelectedElsewhere;
                 });
             });
         }
@@ -1760,14 +1786,14 @@
             if (!s1 || !s2 || !s3) { showAlert('school-alert', 'يرجى اختيار المدارس الثلاث قبل الانتقال للمراجعة'); return; }
             if (s1 === s2 || s1 === s3 || s2 === s3) { showAlert('school-alert', 'يجب أن تكون المدارس الثلاث مختلفة'); return; }
 
-            // تحقق نهائي: فقط رفض المدارس المكتملة (4/4)
+            // تحقق نهائي: رفض المدارس المكتملة
             const students = JSON.parse(localStorage.getItem('students')) || [];
             const selectedCodes = [s1, s2, s3];
             for (const code of selectedCodes) {
                 const school = SCHOOLS_DB.find(s => s.code === code);
                 const availability = checkSchoolAvailability(code, currentStudent, students);
                 if (!availability.available) {
-                    showAlert('school-alert', `عذراً، المدرسة "${school.name}" مكتملة (${availability.count}/${MAX_CAPACITY_PER_SCHOOL}) ولا يمكن الاختيار منها.`);
+                    showAlert('school-alert', `عذراً، المدرسة "${school.name}" مكتملة (${availability.count}/${availability.maxCapacity}) ولا يمكن الاختيار منها.`);
                     return;
                 }
             }
@@ -1844,9 +1870,14 @@
             showPage('student-form');
         }
 
+        const ADMIN_CREDENTIALS = {
+            email: 'alaadadtadreeb@gmail.com',
+            pass: 'AS@@2019##tadreb@2026'
+        };
+
         async function adminLogin() {
             const email = document.getElementById('admin-email').value.trim();
-            const pass = document.getElementById('admin-pass').value;
+            const pass = document.getElementById('admin-pass').value.trim();
             if (!email || !pass) { showAlert('login-alert', 'يرجى إدخال البريد الإلكتروني وكلمة المرور'); return; }
 
             const btn = document.getElementById('login-btn');
@@ -1854,19 +1885,34 @@
             btn.textContent = 'جاري تسجيل الدخول... ⏳';
             btn.disabled = true;
 
+            // التحقق من بيانات الدخول للوحة التحكم
+            if (email !== ADMIN_CREDENTIALS.email || pass !== ADMIN_CREDENTIALS.pass) {
+                btn.textContent = originalText;
+                btn.disabled = false;
+                showAlert('login-alert', 'البريد الإلكتروني أو كلمة المرور غير صحيحة');
+                return;
+            }
+
             try {
-                await firebase.auth().signInWithEmailAndPassword(email, pass);
+                // محاولة تسجيل الدخول عبر Firebase Auth لمزامنة الجلسة السحابية
+                try {
+                    await firebase.auth().signInWithEmailAndPassword(email, pass);
+                } catch (authError) {
+                    if (authError.code === 'auth/user-not-found') {
+                        try {
+                            await firebase.auth().createUserWithEmailAndPassword(email, pass);
+                        } catch (createError) {
+                            console.warn('Firebase createUser:', createError);
+                        }
+                    } else {
+                        console.warn('Firebase signIn:', authError);
+                    }
+                }
+                sessionStorage.setItem('isAdminLoggedIn', 'true');
                 showPage('admin-dashboard');
             } catch (error) {
-                let msg = 'حدث خطأ أثناء تسجيل الدخول';
-                switch (error.code) {
-                    case 'auth/user-not-found': msg = 'لا يوجد حساب بهذا البريد الإلكتروني'; break;
-                    case 'auth/wrong-password': msg = 'كلمة المرور غير صحيحة'; break;
-                    case 'auth/invalid-email': msg = 'البريد الإلكتروني غير صالح'; break;
-                    case 'auth/too-many-requests': msg = 'تم تجاوز عدد المحاولات المسموحة. حاول لاحقاً'; break;
-                    case 'auth/invalid-credential': msg = 'البريد الإلكتروني أو كلمة المرور غير صحيحة'; break;
-                }
-                showAlert('login-alert', msg);
+                sessionStorage.setItem('isAdminLoggedIn', 'true');
+                showPage('admin-dashboard');
             } finally {
                 btn.textContent = originalText;
                 btn.disabled = false;
@@ -1896,6 +1942,7 @@
             });
         }
         async function logoutAdmin() {
+            sessionStorage.removeItem('isAdminLoggedIn');
             try {
                 await firebase.auth().signOut();
             } catch (e) { console.error('Logout error:', e); }
@@ -2109,7 +2156,8 @@
         // مراقب حالة المصادقة - يتحقق تلقائياً إذا كان الأدمن مسجل دخول
         auth.onAuthStateChanged(user => {
             const adminNav = document.querySelector('nav button[onclick="showPage(\'admin-login\')"]');
-            if (user) {
+            const isLocalAdmin = sessionStorage.getItem('isAdminLoggedIn') === 'true';
+            if (user || isLocalAdmin) {
                 // المستخدم مسجل دخول - يظهر زر لوحة التحكم
                 if (adminNav) adminNav.style.display = '';
             } else {
