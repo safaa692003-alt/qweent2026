@@ -13,6 +13,10 @@
         "destination": "/universities.html"
       },
       {
+        "source": "/principal",
+        "destination": "/principal.html"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
