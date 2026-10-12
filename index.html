@@ -977,6 +977,80 @@
                         </table>
                     </div>
                 </div>
+
+                <!-- قسم إحصائية الطلبة حسب المباشرة والانفكاك -->
+                <div class="card" style="margin-top: 2rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+                        <div>
+                            <h2 style="color:var(--primary-blue); font-size:1.4rem;">📊 إحصائية الطلبة المطبقين (المباشرة والانفكاك)</h2>
+                            <p style="color:#666; font-size:0.9rem; margin-top:0.3rem;">تقسيم تفصيلي: كود الطالب - اسم الطالب الثلاثي - الجامعة - الكلية - القسم - المدرسة التي طبق بها - تاريخ المباشرة - تاريخ الانفكاك</p>
+                        </div>
+                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                            <button class="btn btn-green" onclick="exportStatsToExcel()">excel تصدير الإحصائية</button>
+                            <button class="btn btn-purple" onclick="printStatsTable()">🖨️ طباعة الإحصائية</button>
+                        </div>
+                    </div>
+
+                    <!-- كروت إحصائية سريعة -->
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; margin-bottom:1.5rem;">
+                        <div style="background:#eef6fc; border-right:4px solid var(--nav-blue); padding:1rem; border-radius:6px;">
+                            <div style="font-size:0.85rem; color:#555;">إجمالي الطلبة</div>
+                            <div id="stat-total-students" style="font-size:1.6rem; font-weight:bold; color:var(--primary-blue);">0</div>
+                        </div>
+                        <div style="background:#eafaf1; border-right:4px solid var(--success-green); padding:1rem; border-radius:6px;">
+                            <div style="font-size:0.85rem; color:#555;">تمت المباشرة</div>
+                            <div id="stat-started-students" style="font-size:1.6rem; font-weight:bold; color:var(--success-green);">0</div>
+                        </div>
+                        <div style="background:#fef9e7; border-right:4px solid var(--gold-yellow); padding:1rem; border-radius:6px;">
+                            <div style="font-size:0.85rem; color:#555;">تم الانفكاك</div>
+                            <div id="stat-ended-students" style="font-size:1.6rem; font-weight:bold; color:#b7950b);">0</div>
+                        </div>
+                        <div style="background:#fdedec; border-right:4px solid var(--principal-orange); padding:1rem; border-radius:6px;">
+                            <div style="font-size:0.85rem; color:#555;">بانتظار المباشرة</div>
+                            <div id="stat-pending-students" style="font-size:1.6rem; font-weight:bold; color:var(--principal-orange);">0</div>
+                        </div>
+                    </div>
+
+                    <!-- أدوات التصفية والبحث -->
+                    <div style="background:#f8f9fa; padding:1rem; border-radius:8px; margin-bottom:1.2rem; display:flex; gap:1rem; flex-wrap:wrap; align-items:center;">
+                        <div style="flex:1; min-width:220px;">
+                            <input type="text" id="stats-search-input" oninput="filterStatsTable()" placeholder="🔍 بحث باسم الطالب، الكود، أو المدرسة..." style="width:100%; padding:0.6rem 1rem; border:1px solid #ccc; border-radius:4px; font-size:0.95rem;">
+                        </div>
+                        <div style="min-width:180px;">
+                            <select id="stats-filter-univ" onchange="filterStatsTable()" style="width:100%; padding:0.6rem; border:1px solid #ccc; border-radius:4px;">
+                                <option value="">جميع الجامعات</option>
+                            </select>
+                        </div>
+                        <div style="min-width:180px;">
+                            <select id="stats-filter-status" onchange="filterStatsTable()" style="width:100%; padding:0.6rem; border:1px solid #ccc; border-radius:4px;">
+                                <option value="">جميع الحالات</option>
+                                <option value="started">تمت المباشرة</option>
+                                <option value="ended">تم الانفكاك</option>
+                                <option value="pending">بانتظار المباشرة</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- جدول الإحصائية -->
+                    <div class="table-container">
+                        <table id="admin-stats-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>كود الطالب</th>
+                                    <th>اسم الطالب الثلاثي</th>
+                                    <th>الجامعة</th>
+                                    <th>الكلية</th>
+                                    <th>القسم</th>
+                                    <th>المدرسة التي طبق بها</th>
+                                    <th>تاريخ المباشرة</th>
+                                    <th>تاريخ الانفكاك</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
         </section>
         <!-- صفحة دخول مدير المدرسة -->
         <section id="principal-login" class="page-section">
@@ -2224,6 +2298,7 @@
             }
 
             await loadDatesTable();
+            await loadStatsTable();
         }
 
         window.loadDatesTable = async function () {
@@ -2281,13 +2356,236 @@
             if (confirm('هل أنت متأكد من مسح جميع التواريخ المرسلة من المدارس بشكل نهائي؟')) {
                 try {
                     await db.ref('school_dates').remove();
-                    loadDatesTable();
+                    await loadDatesTable();
+                    await loadStatsTable();
                     alert('تم مسح بيانات التواريخ بنجاح.');
                 } catch (e) {
                     alert('حدث خطأ أثناء المسح: ' + e.message);
                 }
             }
         }
+
+        // ==========================================
+        // وظائف إحصائية الطلبة والمباشرة والانفكاك
+        // ==========================================
+        let allStatsData = [];
+
+        window.loadStatsTable = async function () {
+            const tbody = document.querySelector('#admin-stats-table tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding: 2rem; font-weight:bold;">جاري إعداد الإحصائية... ⏳</td></tr>';
+
+            try {
+                // 1. جلب بيانات الطلبة
+                const students = JSON.parse(localStorage.getItem('students')) || [];
+
+                // 2. جلب بيانات التواريخ من الخادم
+                const snapshot = await db.ref('school_dates').once('value');
+                const datesData = snapshot.val();
+                const datesMap = {};
+                if (datesData) {
+                    Object.values(datesData).forEach(schoolRecords => {
+                        const recList = Array.isArray(schoolRecords) ? schoolRecords : Object.values(schoolRecords);
+                        recList.forEach(rec => {
+                            if (rec && rec.studentCode) {
+                                datesMap[rec.studentCode.trim().toLowerCase()] = rec;
+                            }
+                        });
+                    });
+                }
+
+                // 3. دمج البيانات في قائمة إحصائية شاملة
+                allStatsData = [];
+                const matchedCodes = new Set();
+
+                students.forEach(s => {
+                    const codeKey = (s.code || '').trim().toLowerCase();
+                    if (codeKey) matchedCodes.add(codeKey);
+                    const dateRec = datesMap[codeKey];
+
+                    const schoolApplied = (dateRec && dateRec.schoolName) ? dateRec.schoolName : (s.school1Name || 'غير محدد');
+                    const startDate = (dateRec && dateRec.startDate) ? dateRec.startDate : '-';
+                    const endDate = (dateRec && dateRec.endDate) ? dateRec.endDate : '-';
+
+                    allStatsData.push({
+                        code: s.code || '-',
+                        name: s.name || '-',
+                        university: s.university || '-',
+                        college: s.college || '-',
+                        department: s.department || '-',
+                        school: schoolApplied,
+                        startDate: startDate,
+                        endDate: endDate
+                    });
+                });
+
+                // إضافة أي طالب وردت له بيانات تواريخ ولم يكن في جدول الطلبة
+                Object.keys(datesMap).forEach(codeKey => {
+                    if (!matchedCodes.has(codeKey)) {
+                        const rec = datesMap[codeKey];
+                        allStatsData.push({
+                            code: rec.studentCode || '-',
+                            name: rec.studentName || '-',
+                            university: rec.university || '-',
+                            college: rec.college || '-',
+                            department: rec.department || '-',
+                            school: rec.schoolName || '-',
+                            startDate: rec.startDate || '-',
+                            endDate: rec.endDate || '-'
+                        });
+                    }
+                });
+
+                // تحديث خيارات التصفية بالجامعات
+                populateStatsFilters();
+
+                // تحديث العدادات الإحصائية
+                updateStatsCounters();
+
+                // عرض البيانات في الجدول
+                renderStatsTable(allStatsData);
+
+            } catch (e) {
+                console.error("Error loading stats table", e);
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 2rem; color:red;">حدث خطأ أثناء تحميل الإحصائية: ${e.message}</td></tr>`;
+            }
+        };
+
+        function updateStatsCounters() {
+            const total = allStatsData.length;
+            const started = allStatsData.filter(item => item.startDate && item.startDate !== '-').length;
+            const ended = allStatsData.filter(item => item.endDate && item.endDate !== '-').length;
+            const pending = allStatsData.filter(item => !item.startDate || item.startDate === '-').length;
+
+            const elTotal = document.getElementById('stat-total-students');
+            const elStarted = document.getElementById('stat-started-students');
+            const elEnded = document.getElementById('stat-ended-students');
+            const elPending = document.getElementById('stat-pending-students');
+
+            if (elTotal) elTotal.textContent = total;
+            if (elStarted) elStarted.textContent = started;
+            if (elEnded) elEnded.textContent = ended;
+            if (elPending) elPending.textContent = pending;
+        }
+
+        function populateStatsFilters() {
+            const selectUniv = document.getElementById('stats-filter-univ');
+            if (!selectUniv) return;
+            const currentVal = selectUniv.value;
+            const universities = [...new Set(allStatsData.map(item => item.university).filter(u => u && u !== '-'))].sort();
+
+            selectUniv.innerHTML = '<option value="">جميع الجامعات</option>';
+            universities.forEach(u => {
+                selectUniv.innerHTML += `<option value="${u}">${u}</option>`;
+            });
+            selectUniv.value = currentVal;
+        }
+
+        function renderStatsTable(data) {
+            const tbody = document.querySelector('#admin-stats-table tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding: 2rem; color:#888;">لا توجد سجلات مطابقة</td></tr>';
+                return;
+            }
+
+            data.forEach((item, index) => {
+                const startBadge = item.startDate !== '-' 
+                    ? `<span style="background:#eafaf1; color:#27ae60; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:0.9rem;">${item.startDate}</span>` 
+                    : `<span style="color:#aaa;">-</span>`;
+
+                const endBadge = item.endDate !== '-' 
+                    ? `<span style="background:#fef9e7; color:#b7950b; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:0.9rem;">${item.endDate}</span>` 
+                    : `<span style="color:#aaa;">-</span>`;
+
+                tbody.innerHTML += `<tr>
+                    <td>${index + 1}</td>
+                    <td><strong style="color:var(--primary-blue);">${item.code}</strong></td>
+                    <td>${item.name}</td>
+                    <td>${item.university}</td>
+                    <td>${item.college}</td>
+                    <td>${item.department}</td>
+                    <td><span style="font-weight:bold; color:#2c3e50;">${item.school}</span></td>
+                    <td>${startBadge}</td>
+                    <td>${endBadge}</td>
+                </tr>`;
+            });
+        }
+
+        window.filterStatsTable = function () {
+            const search = (document.getElementById('stats-search-input').value || '').trim().toLowerCase();
+            const univ = document.getElementById('stats-filter-univ').value;
+            const status = document.getElementById('stats-filter-status').value;
+
+            const filtered = allStatsData.filter(item => {
+                const matchesSearch = !search || 
+                    item.name.toLowerCase().includes(search) || 
+                    item.code.toLowerCase().includes(search) || 
+                    item.school.toLowerCase().includes(search);
+
+                const matchesUniv = !univ || item.university === univ;
+
+                let matchesStatus = true;
+                if (status === 'started') {
+                    matchesStatus = item.startDate !== '-';
+                } else if (status === 'ended') {
+                    matchesStatus = item.endDate !== '-';
+                } else if (status === 'pending') {
+                    matchesStatus = item.startDate === '-';
+                }
+
+                return matchesSearch && matchesUniv && matchesStatus;
+            });
+
+            renderStatsTable(filtered);
+        };
+
+        window.exportStatsToExcel = function () {
+            let csv = '\uFEFF#,كود الطالب,اسم الطالب الثلاثي,الجامعة,الكلية,القسم,المدرسة التي طبق بها,تاريخ المباشرة,تاريخ الانفكاك\n';
+            allStatsData.forEach((item, index) => {
+                const clean = (str) => `"${(str || '').replace(/"/g, '""')}"`;
+                csv += `${index + 1},${clean(item.code)},${clean(item.name)},${clean(item.university)},${clean(item.college)},${clean(item.department)},${clean(item.school)},${clean(item.startDate)},${clean(item.endDate)}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'احصائية_المطبقين_والمباشرة_والانفكاك.csv';
+            link.click();
+        };
+
+        window.printStatsTable = function () {
+            const printWindow = window.open('', '_blank');
+            const tableHtml = document.getElementById('admin-stats-table').outerHTML;
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html lang="ar" dir="rtl">
+                <head>
+                    <meta charset="utf-8">
+                    <title>إحصائية الطلبة المطبقين والمباشرة والانفكاك</title>
+                    <style>
+                        body { font-family: 'Arial', sans-serif; padding: 20px; direction: rtl; }
+                        h2, h3 { text-align: center; color: #003366; margin: 5px; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 11pt; }
+                        th, td { border: 1px solid #333; padding: 6px 10px; text-align: center; }
+                        th { background-color: #003366; color: white; }
+                        @media print { @page { size: landscape; margin: 1cm; } }
+                    </style>
+                </head>
+                <body>
+                    <h2>وزارة التربية - مديرية تربية المثنى</h2>
+                    <h3>قسم الإعداد والتدريب - شعبة المعاهد</h3>
+                    <h3 style="margin-bottom: 20px;">إحصائية الطلبة المطبقين (المباشرة والانفكاك)</h3>
+                    ${tableHtml}
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            setTimeout(() => {
+                printWindow.print();
+            }, 500);
+        };
 
         // Override principalSearch
         window.principalSearch = async function () {
