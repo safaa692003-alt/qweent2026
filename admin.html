@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - نظام توزيع المطبقين</title>
+    <style>
+        :root {
+            --primary-blue: #003366;
+            --nav-blue: #4a90e2;
+            --gold-yellow: #f1c40f;
+            --bg-gray: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-dark: #333333;
+            --border-color: #dddddd;
+            --danger-red: #d32f2f;
+            --full-red-bg: #ffcdd2;
+            --success-green: #27ae60;
+            --principal-orange: #d35400;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header & Nav */
+        header {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 1rem 15rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid #002244;
+        }
+
+        .header-title h1 {
+            font-size: 1.2rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .header-title p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* تعديل تنسيق الشعار ليكون صورة */
+        .logo-placeholder {
+            width: 90px;
+            height: 90px;
+            background: transparent;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .logo-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        nav {
+            background-color: #002244;
+            padding: 0.8rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            background-color: var(--nav-blue);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        nav button:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+
+        nav button.active {
+            background-color: var(--gold-yellow);
+            color: var(--primary-blue);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        nav button.principal-btn.active {
+            background-color: var(--principal-orange);
+            color: white;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            width: 100%;
+        }
+
+        .page-section {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Cards & Forms */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .note-box {
+            background-color: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+
+        .note-box strong {
+            color: var(--primary-blue);
+        }
+
+        .alert-box {
+            background-color: #ffebee;
+            border: 1px solid #ffcdd2;
+            color: #c62828;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 250px;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-group label {
+            background-color: var(--gold-yellow);
+            color: var(--primary-blue);
+            padding: 0.8rem 1.5rem;
+            font-weight: bold;
+            min-width: 140px;
+            text-align: center;
+            border-radius: 4px;
+            margin-left: 1rem;
+            white-space: nowrap;
+        }
+
+        input,
+        select {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            background: white;
+            font-weight: bold;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--nav-blue);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+
+        option.school-full {
+            background-color: var(--full-red-bg) !important;
+            color: var(--danger-red) !important;
+            font-weight: 900;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.8rem 2.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-gold {
+            background-color: var(--gold-yellow);
+            color: var(--primary-blue);
+        }
+
+        .btn-blue {
+            background-color: var(--nav-blue);
+            color: white;
+        }
+
+        .btn-green {
+            background-color: var(--success-green);
+            color: white;
+        }
+
+        .btn-red {
+            background-color: var(--danger-red);
+            color: white;
+        }
+
+        .btn-purple {
+            background-color: #8e44ad;
+            color: white;
+        }
+
+        .btn-orange {
+            background-color: var(--principal-orange);
+            color: white;
+        }
+
+        .btn:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            min-width: 800px;
+        }
+
+        th {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 1rem;
+            text-align: right;
+            font-weight: bold;
+        }
+
+        td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #eee;
+            text-align: right;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f8ff;
+        }
+
+        /* Login Box */
+        .login-card {
+            max-width: 500px;
+            margin: 3rem auto;
+            text-align: center;
+        }
+
+        .login-header {
+            background: var(--primary-blue);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px 8px 0 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .login-body {
+            border: 1px solid var(--border-color);
+            border-top: none;
+            padding: 2rem;
+            border-radius: 0 0 8px 8px;
+            background: white;
+        }
+
+        .login-input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+
+        .login-input-group label {
+            background: var(--nav-blue);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            min-width: 120px;
+        }
+
+        .login-input-group input {
+            flex: 1;
+        }
+
+        /* Review Section */
+        .review-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .review-item {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dashed #ddd;
+            padding: 0.5rem 0;
+        }
+
+        .review-label {
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+
+        .review-value {
+            color: #555;
+        }
+
+        footer {
+            background-color: var(--primary-blue);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: auto;
+            font-size: 0.9rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* ==========================================
+           PRINT STYLES
+           ========================================== */
+        @media print {
+            @page {
+                size: landscape;
+                margin: 1cm;
+            }
+
+            body * {
+                visibility: hidden;
+            }
+
+            #principal-results,
+            #principal-results * {
+                visibility: visible;
+            }
+
+            #principal-results {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                display: block !important;
+            }
+
+            #principal-results>.card {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+                margin: 0;
+                max-width: 100%;
+                background: transparent;
+            }
+
+            .print-header {
+                visibility: visible !important;
+                display: flex !important;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 2px solid #000;
+                padding-bottom: 10px;
+                margin-bottom: 20px;
+                font-size: 12pt;
+            }
+
+            .print-header div {
+                text-align: center;
+            }
+
+            .print-header .center-text {
+                font-size: 14pt;
+                font-weight: 900;
+            }
+
+            .print-footer {
+                visibility: visible !important;
+                display: block !important;
+                text-align: center;
+                border-top: 1px solid #000;
+                padding-top: 10px;
+                margin-top: 20px;
+                font-size: 10pt;
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+            }
+
+            h2.print-title {
+                color: #000;
+                font-size: 14pt;
+                margin: 20px 0 10px 0;
+                text-align: center;
+                text-decoration: underline;
+            }
+
+            .table-container {
+                overflow: visible !important;
+                border: none;
+                margin-top: 5px;
+            }
+
+            table {
+                font-size: 10pt;
+                width: 100%;
+                border: 1px solid #000;
+                page-break-inside: avoid;
+            }
+
+            th {
+                background-color: #333 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                border: 1px solid #000;
+                padding: 5px;
+            }
+
+            td {
+                border: 1px solid #000;
+                padding: 5px;
+            }
+
+            tr:nth-child(even) {
+                background-color: #f2f2f2 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .print-table-wrapper:first-of-type {
+                page-break-after: always;
+                margin-bottom: 0;
+            }
+
+            .print-table-wrapper:last-of-type {
+                page-break-before: always;
+                margin-top: 20px;
+            }
+
+            .no-print,
+            .btn,
+            .alert-box,
+            .note-box {
+                display: none !important;
+            }
+
+            input[type="text"] {
+                border: none !important;
+                background: transparent !important;
+                padding: 0 !important;
+                font-weight: bold;
+                width: 100% !important;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .form-group label {
+                min-width: 100%;
+                margin-left: 0;
+                margin-bottom: 0.5rem;
+            }
+
+            .review-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ==========================================
+           SUCCESS OVERLAY
+           ========================================== */
+        #success-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        #success-overlay.show {
+            display: flex;
+        }
+
+        .success-card {
+            background: white;
+            border-radius: 16px;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            max-width: 460px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2.8rem;
+            box-shadow: 0 8px 25px rgba(39, 174, 96, 0.4);
+            animation: bounceIn 0.6s 0.2s both;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0);
+            }
+
+            60% {
+                transform: scale(1.15);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .success-title {
+            font-size: 1.6rem;
+            color: #27ae60;
+            margin-bottom: 0.8rem;
+            font-weight: bold;
+        }
+
+        .success-msg {
+            color: #555;
+            font-size: 1rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        .success-msg strong {
+            color: var(--primary-blue);
+        }
+
+        .btn-new-student {
+            background: linear-gradient(135deg, var(--primary-blue), var(--nav-blue));
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 51, 102, 0.3);
+        }
+
+        .btn-new-student:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 51, 102, 0.4);
+        }
+
+        .sent-name-display {
+            background: #f0f7ff;
+            border: 1px solid #bbdefb;
+            border-radius: 8px;
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-blue);
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-title">
+            <h1>وزارة التربية</h1>
+            <p>مديرية تربية المثنى</p>
+        </div>
+
+        <div class="logo-placeholder">
+            <img src="logo1.png" alt="شعار النظام">
+        </div>
+
+        <div class="header-title" style="text-align: left;">
+            <h1>قسم الإعداد والتدريب</h1>
+            <p>لوحة التحكم</p>
+        </div>
+    </header>
+
+    <main>
+        <section id="admin-login" class="page-section active">
+            <div class="login-card">
+                <div class="login-header">تسجيل الدخول إلى لوحة التحكم</div>
+                <div class="login-body">
+                    <div id="login-alert" class="alert-box"></div>
+                    <div class="login-input-group">
+                        <label>البريد الإلكتروني</label>
+                        <input type="email" id="admin-email" placeholder="أدخل البريد الإلكتروني" autocomplete="email">
+                    </div>
+                    <div class="login-input-group">
+                        <label>كلمة المرور</label>
+                        <input type="password" id="admin-pass" placeholder="أدخل كلمة المرور" autocomplete="current-password">
+                    </div>
+                    <button id="login-btn" class="btn btn-blue" style="width: 100%; margin-top: 1rem;"
+                        onclick="adminLogin()">دخول</button>
+                    <button class="btn" style="width: 100%; margin-top: 0.5rem; background: transparent; color: var(--nav-blue); border: none; cursor: pointer; font-size: 0.9rem; text-decoration: underline;"
+                        onclick="resetPassword()">نسيت كلمة المرور؟</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="admin-dashboard" class="page-section">
+            <div class="card">
+                <div
+                    style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+                    <h2 style="color:var(--primary-blue);">لوحة التحكم - التقرير التراكمي</h2>
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                        <button class="btn btn-green" onclick="exportToExcel()">excel تقرير تراكمي</button>
+                        <button class="btn btn-blue" style="background-color: #2a5298;" onclick="exportToWord()">word
+                            تقرير تراكمي</button>
+                        <button class="btn btn-gold" onclick="clearAllData()">🗑️ مسح المعلومات</button>
+                        <button class="btn btn-blue" onclick="logoutAdmin()">تسجيل الخروج</button>
+                    </div>
+                </div>
+                <p style="margin-bottom:1rem;">عدد السجلات المدخلة: <span id="total-records"
+                        style="font-weight:bold; color:var(--nav-blue);">0</span></p>
+                <div class="table-container">
+                    <table id="admin-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>الاسم الثلاثي</th>
+                                <th>الكود</th>
+                                <th>الجامعة</th>
+                                <th>الكلية</th>
+                                <th>القسم</th>
+                                <th>القطاع</th>
+                                <th>نوع الدراسة</th>
+                                <th>الجنس</th>
+                                <th>الخيار الاول</th>
+                                <th>الخيار الثاني</th>
+                                <th>الخيار الثالث</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div
+                        style="margin-top: 3rem; display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+                        <h2 style="color:var(--primary-blue);">سجلات المباشرة والانفكاك (الردود الواردة من المدارس)</h2>
+                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                            <button class="btn btn-green" onclick="exportDatesToExcel()">excel جدول التواريخ</button>
+                            <button class="btn btn-gold" onclick="clearDatesData()">🗑️ مسح التواريخ</button>
+                        </div>
+                    </div>
+                    <p style="margin-bottom:1rem;">عدد السجلات المدخلة: <span id="total-dates-records"
+                            style="font-weight:bold; color:var(--nav-blue);">0</span></p>
+                    <div class="table-container">
+                        <table id="admin-dates-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>اسم المدرسة</th>
+                                    <th>اسم الطالب الرباعي</th>
+                                    <th>الجامعة</th>
+                                    <th>الكلية</th>
+                                    <th>القسم</th>
+                                    <th>نوع الدراسة</th>
+                                    <th>تاريخ المباشرة</th>
+                                    <th>تاريخ الانفكاك</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- قسم إحصائية الطلبة حسب المباشرة والانفكاك -->
+                <div class="card" style="margin-top: 2rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+                        <div>
+                            <h2 style="color:var(--primary-blue); font-size:1.4rem;">📊 إحصائية الطلبة المطبقين (المباشرة والانفكاك)</h2>
+                            <p style="color:#666; font-size:0.9rem; margin-top:0.3rem;">تقسيم تفصيلي: كود الطالب - اسم الطالب الثلاثي - الجامعة - الكلية - القسم - المدرسة التي طبق بها - تاريخ المباشرة - تاريخ الانفكاك</p>
+                        </div>
+                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                            <button class="btn btn-green" onclick="exportStatsToExcel()">excel تصدير الإحصائية</button>
+                            <button class="btn btn-purple" onclick="printStatsTable()">🖨️ طباعة الإحصائية</button>
+                        </div>
+                    </div>
+
+                    <!-- كروت إحصائية سريعة -->
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; margin-bottom:1.5rem;">
+                        <div style="background:#eef6fc; border-right:4px solid var(--nav-blue); padding:1rem; border-radius:6px;">
+                            <div style="font-size:0.85rem; color:#555;">إجمالي الطلبة</div>
+                            <div id="stat-total-students" style="font-size:1.6rem; font-weight:bold; color:var(--primary-blue);">0</div>
+                        </div>
+                        <div style="background:#eafaf1; border-right:4px solid var(--success-green); padding:1rem; border-radius:6px;">
+                            <div style="font-size:0.85rem; color:#555;">تمت المباشرة</div>
+                            <div id="stat-started-students" style="font-size:1.6rem; font-weight:bold; color:var(--success-green);">0</div>
+                        </div>
+                        <div style="background:#fef9e7; border-right:4px solid var(--gold-yellow); padding:1rem; border-radius:6px;">
+                            <div style="font-size:0.85rem; color:#555;">تم الانفكاك</div>
+                            <div id="stat-ended-students" style="font-size:1.6rem; font-weight:bold; color:#b7950b);">0</div>
+                        </div>
+                        <div style="background:#fdedec; border-right:4px solid var(--principal-orange); padding:1rem; border-radius:6px;">
+                            <div style="font-size:0.85rem; color:#555;">بانتظار المباشرة</div>
+                            <div id="stat-pending-students" style="font-size:1.6rem; font-weight:bold; color:var(--principal-orange);">0</div>
+                        </div>
+                    </div>
+
+                    <!-- أدوات التصفية والبحث -->
+                    <div style="background:#f8f9fa; padding:1rem; border-radius:8px; margin-bottom:1.2rem; display:flex; gap:1rem; flex-wrap:wrap; align-items:center;">
+                        <div style="flex:1; min-width:220px;">
+                            <input type="text" id="stats-search-input" oninput="filterStatsTable()" placeholder="🔍 بحث باسم الطالب، الكود، أو المدرسة..." style="width:100%; padding:0.6rem 1rem; border:1px solid #ccc; border-radius:4px; font-size:0.95rem;">
+                        </div>
+                        <div style="min-width:180px;">
+                            <select id="stats-filter-univ" onchange="filterStatsTable()" style="width:100%; padding:0.6rem; border:1px solid #ccc; border-radius:4px;">
+                                <option value="">جميع الجامعات</option>
+                            </select>
+                        </div>
+                        <div style="min-width:180px;">
+                            <select id="stats-filter-status" onchange="filterStatsTable()" style="width:100%; padding:0.6rem; border:1px solid #ccc; border-radius:4px;">
+                                <option value="">جميع الحالات</option>
+                                <option value="started">تمت المباشرة</option>
+                                <option value="ended">تم الانفكاك</option>
+                                <option value="pending">بانتظار المباشرة</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- جدول الإحصائية -->
+                    <div class="table-container">
+                        <table id="admin-stats-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>كود الطالب</th>
+                                    <th>اسم الطالب الثلاثي</th>
+                                    <th>الجامعة</th>
+                                    <th>الكلية</th>
+                                    <th>القسم</th>
+                                    <th>المدرسة التي طبق بها</th>
+                                    <th>تاريخ المباشرة</th>
+                                    <th>تاريخ الانفكاك</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>م.م صفاء هادي عبد العالي مدير قسم الاعداد والتدريب</p>
+    </footer>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <script>
+        const ADMIN_CREDENTIALS = {
+            email: 'alaadadtadreeb@gmail.com',
+            pass: 'AS@@2019##tadreb@2026'
+        };
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById(pageId);
+            if (target) {
+                target.classList.add('active');
+            }
+            if (pageId === 'admin-dashboard') {
+                loadAdminTable();
+            }
+        }
+
+        function showAlert(id, msg, isSuccess = false) {
+            const el = document.getElementById(id);
+            el.style.display = 'block';
+            el.style.backgroundColor = isSuccess ? '#d4edda' : '#ffebee';
+            el.style.color = isSuccess ? '#155724' : '#c62828';
+            el.style.borderColor = isSuccess ? '#c3e6cb' : '#ffcdd2';
+            el.textContent = msg;
+            if (!isSuccess) setTimeout(() => el.style.display = 'none', 4000);
+        }
+
+        async function adminLogin() {
+            const email = document.getElementById('admin-email').value.trim();
+            const pass = document.getElementById('admin-pass').value.trim();
+            if (!email || !pass) { showAlert('login-alert', 'يرجى إدخال البريد الإلكتروني وكلمة المرور'); return; }
+
+            const btn = document.getElementById('login-btn');
+            const originalText = btn.textContent;
+            btn.textContent = 'جاري تسجيل الدخول... ⏳';
+            btn.disabled = true;
+
+            // التحقق من بيانات الدخول للوحة التحكم
+            if (email !== ADMIN_CREDENTIALS.email || pass !== ADMIN_CREDENTIALS.pass) {
+                btn.textContent = originalText;
+                btn.disabled = false;
+                showAlert('login-alert', 'البريد الإلكتروني أو كلمة المرور غير صحيحة');
+                return;
+            }
+
+            try {
+                // محاولة تسجيل الدخول عبر Firebase Auth لمزامنة الجلسة السحابية
+                try {
+                    await firebase.auth().signInWithEmailAndPassword(email, pass);
+                } catch (authError) {
+                    if (authError.code === 'auth/user-not-found') {
+                        try {
+                            await firebase.auth().createUserWithEmailAndPassword(email, pass);
+                        } catch (createError) {
+                            console.warn('Firebase createUser:', createError);
+                        }
+                    } else {
+                        console.warn('Firebase signIn:', authError);
+                    }
+                }
+                sessionStorage.setItem('isAdminLoggedIn', 'true');
+                showPage('admin-dashboard');
+            } catch (error) {
+                sessionStorage.setItem('isAdminLoggedIn', 'true');
+                showPage('admin-dashboard');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        async function resetPassword() {
+            const email = document.getElementById('admin-email').value.trim();
+            if (!email) { showAlert('login-alert', 'يرجى إدخال البريد الإلكتروني أولاً ثم الضغط على نسيت كلمة المرور'); return; }
+            try {
+                await firebase.auth().sendPasswordResetEmail(email);
+                showAlert('login-alert', '✅ تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني', true);
+            } catch (error) {
+                let msg = 'حدث خطأ أثناء إرسال رابط إعادة التعيين';
+                if (error.code === 'auth/user-not-found') msg = 'لا يوجد حساب بهذا البريد الإلكتروني';
+                if (error.code === 'auth/invalid-email') msg = 'البريد الإلكتروني غير صالح';
+                showAlert('login-alert', msg);
+            }
+        }
+        async function logoutAdmin() {
+            sessionStorage.removeItem('isAdminLoggedIn');
+            try {
+                await firebase.auth().signOut();
+            } catch (e) { console.error('Logout error:', e); }
+            document.getElementById('admin-email').value = '';
+            document.getElementById('admin-pass').value = '';
+            showPage('admin-login');
+        }
+        function exportToExcel() {
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+            let csv = '\uFEFF#,الاسم,الكود,الجامعة,الكلية,القسم,القطاع,الدراسة,الجنس,خيار1,خيار2,خيار3\n';
+            students.forEach((s, i) => csv += `${i + 1},${s.name},${s.code},${s.university},${s.college},${s.department},${s.sector},${s.studyType},${s.gender},${s.school1Name},${s.school2Name},${s.school3Name}\n`);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'تقرير_المطبقين.csv'; link.click();
+        }
+        function exportToWord() {
+            const table = document.getElementById("admin-table");
+            const html = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+        <head>
+            <meta charset="utf-8">
+            <title>التقرير التراكمي</title>
+            <style>
+                @page WordSection1 {
+                    size: 841.9pt 595.3pt; /* A4 landscape */
+                    mso-page-orientation: landscape;
+                    margin: 1.0in 1.0in 1.0in 1.0in;
+                }
+                div.WordSection1 { page: WordSection1; }
+                table { border-collapse: collapse; width: 100%; direction: rtl; font-family: 'Arial', sans-serif; font-size: 12px; }
+                th, td { border: 1px solid black; padding: 5px; text-align: center; }
+                th { background-color: #003366; color: white; }
+            </style>
+        </head>
+        <body>
+            <div class="WordSection1">
+                <h2 style="text-align: center; color: #003366; direction: rtl; font-family: 'Arial', sans-serif;">التقرير التراكمي للمطبقين</h2>
+                ${table.outerHTML}
+            </div>
+        </body>
+        </html>`;
+
+            const blob = new Blob(['\uFEFF', html], { type: 'application/msword' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'التقرير_التراكمي.doc';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        // --- Firebase Integration ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCZ1fpRVevSxSDZD5YnaxFMpSr6lpWiuXw",
+            authDomain: "collstudents.firebaseapp.com",
+            projectId: "collstudents",
+            storageBucket: "collstudents.firebasestorage.app",
+            messagingSenderId: "757968530048",
+            appId: "1:757968530048:web:c355fca1bbc415f3a09465",
+            databaseURL: "https://collstudents-default-rtdb.europe-west1.firebasedatabase.app"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const auth = firebase.auth();
+
+        // مراقب حالة المصادقة - يتحقق تلقائياً إذا كان الأدمن مسجل دخول
+        auth.onAuthStateChanged(user => {
+            const adminNav = document.querySelector('nav button[onclick="showPage(\'admin-login\')"]');
+            const isLocalAdmin = sessionStorage.getItem('isAdminLoggedIn') === 'true';
+            if (user || isLocalAdmin) {
+                // المستخدم مسجل دخول - يظهر زر لوحة التحكم
+                if (adminNav) adminNav.style.display = '';
+            } else {
+                // المستخدم غير مسجل - التأكد من عدم الوصول للوحة التحكم
+                const dashboard = document.getElementById('admin-dashboard');
+                if (dashboard && dashboard.classList.contains('active')) {
+                    showPage('student-form');
+                }
+            }
+        });
+
+        async function syncData() {
+            try {
+                const snapshot = await db.ref('students').once('value');
+                const students = [];
+                snapshot.forEach(child => {
+                    students.push(child.val());
+                });
+                localStorage.setItem('students', JSON.stringify(students));
+                return students;
+            } catch (e) {
+                console.error("Firebase fetch error", e);
+                return JSON.parse(localStorage.getItem('students')) || [];
+            }
+        }
+
+        // Override original submitApplication
+        window.submitApplication = async function () {
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'جاري الإرسال... ⏳';
+            btn.disabled = true;
+
+            const sentName = currentStudent.name || '';
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+            students.push(currentStudent);
+            localStorage.setItem('students', JSON.stringify(students));
+
+            try {
+                await db.ref('students').push(currentStudent);
+            } catch (e) {
+                console.error("Firebase write error", e);
+            }
+
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+
+            showSuccessOverlay(sentName);
+        }
+
+        // Override loadAdminTable
+        window.loadAdminTable = async function () {
+            const tbody = document.querySelector('#admin-table tbody');
+            tbody.innerHTML = '<tr><td colspan="12" style="text-align:center; padding: 2rem; font-weight:bold;">جاري جلب البيانات من قاعدة البيانات... ⏳</td></tr>';
+
+            const students = await syncData();
+            document.getElementById('total-records').textContent = students.length;
+            tbody.innerHTML = '';
+
+            if (students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="12" style="text-align:center; padding: 2rem;">لا توجد بيانات مسجلة حالياً</td></tr>';
+            } else {
+                students.forEach((s, i) => {
+                    tbody.innerHTML += `<tr><td>${i + 1}</td><td>${s.name}</td><td>${s.code}</td><td>${s.university}</td><td>${s.college}</td><td>${s.department}</td><td>${s.sector}</td><td>${s.studyType}</td><td>${s.gender}</td><td>${s.school1Name}</td><td>${s.school2Name}</td><td>${s.school3Name}</td></tr>`;
+                });
+            }
+
+            await loadDatesTable();
+            await loadStatsTable();
+        }
+
+        window.loadDatesTable = async function () {
+            const tbody = document.querySelector('#admin-dates-table tbody');
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding: 2rem; font-weight:bold;">جاري جلب البيانات... ⏳</td></tr>';
+
+            try {
+                const snapshot = await db.ref('school_dates').once('value');
+                const data = snapshot.val();
+                tbody.innerHTML = '';
+
+                let allRecords = [];
+                if (data) {
+                    Object.values(data).forEach(schoolRecords => {
+                        if (Array.isArray(schoolRecords)) {
+                            allRecords = allRecords.concat(schoolRecords);
+                        } else {
+                            Object.values(schoolRecords).forEach(rec => allRecords.push(rec));
+                        }
+                    });
+                }
+
+                document.getElementById('total-dates-records').textContent = allRecords.length;
+
+                if (allRecords.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding: 2rem;">لا توجد بيانات مسجلة حالياً</td></tr>';
+                    return;
+                }
+
+                allRecords.forEach((s, i) => {
+                    tbody.innerHTML += `<tr><td>${i + 1}</td><td>${s.schoolName}</td><td>${s.studentName}</td><td>${s.university}</td><td>${s.college}</td><td>${s.department}</td><td>${s.studyType}</td><td>${s.startDate}</td><td>${s.endDate}</td></tr>`;
+                });
+            } catch (e) {
+                console.error("Error fetching dates", e);
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 2rem; color:red;">حدث خطأ: ${e.message}</td></tr>`;
+            }
+        }
+
+        window.exportDatesToExcel = function () {
+            const tbody = document.querySelector('#admin-dates-table tbody');
+            let csv = '\uFEFF#,اسم المدرسة,اسم الطالب الرباعي,الجامعة,الكلية,القسم,نوع الدراسة,تاريخ المباشرة,تاريخ الانفكاك\n';
+            Array.from(tbody.rows).forEach(row => {
+                if (row.cells.length < 9) return;
+                const rowData = Array.from(row.cells).map(c => `"${c.textContent.replace(/"/g, '""')}"`);
+                csv += rowData.join(',') + '\n';
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'جدول_المباشرة_والانفكاك_المجمع.csv';
+            link.click();
+        }
+
+        window.clearDatesData = async function () {
+            if (confirm('هل أنت متأكد من مسح جميع التواريخ المرسلة من المدارس بشكل نهائي؟')) {
+                try {
+                    await db.ref('school_dates').remove();
+                    await loadDatesTable();
+                    await loadStatsTable();
+                    alert('تم مسح بيانات التواريخ بنجاح.');
+                } catch (e) {
+                    alert('حدث خطأ أثناء المسح: ' + e.message);
+                }
+            }
+        }
+
+        // ==========================================
+        // وظائف إحصائية الطلبة والمباشرة والانفكاك
+        // ==========================================
+        let allStatsData = [];
+
+        window.loadStatsTable = async function () {
+            const tbody = document.querySelector('#admin-stats-table tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding: 2rem; font-weight:bold;">جاري إعداد الإحصائية... ⏳</td></tr>';
+
+            try {
+                // 1. جلب بيانات الطلبة
+                const students = JSON.parse(localStorage.getItem('students')) || [];
+
+                // 2. جلب بيانات التواريخ من الخادم
+                const snapshot = await db.ref('school_dates').once('value');
+                const datesData = snapshot.val();
+                const datesMap = {};
+                if (datesData) {
+                    Object.values(datesData).forEach(schoolRecords => {
+                        const recList = Array.isArray(schoolRecords) ? schoolRecords : Object.values(schoolRecords);
+                        recList.forEach(rec => {
+                            if (rec && rec.studentCode) {
+                                datesMap[rec.studentCode.trim().toLowerCase()] = rec;
+                            }
+                        });
+                    });
+                }
+
+                // 3. دمج البيانات في قائمة إحصائية شاملة
+                allStatsData = [];
+                const matchedCodes = new Set();
+
+                students.forEach(s => {
+                    const codeKey = (s.code || '').trim().toLowerCase();
+                    if (codeKey) matchedCodes.add(codeKey);
+                    const dateRec = datesMap[codeKey];
+
+                    const schoolApplied = (dateRec && dateRec.schoolName) ? dateRec.schoolName : (s.school1Name || 'غير محدد');
+                    const startDate = (dateRec && dateRec.startDate) ? dateRec.startDate : '-';
+                    const endDate = (dateRec && dateRec.endDate) ? dateRec.endDate : '-';
+
+                    allStatsData.push({
+                        code: s.code || '-',
+                        name: s.name || '-',
+                        university: s.university || '-',
+                        college: s.college || '-',
+                        department: s.department || '-',
+                        school: schoolApplied,
+                        startDate: startDate,
+                        endDate: endDate
+                    });
+                });
+
+                // إضافة أي طالب وردت له بيانات تواريخ ولم يكن في جدول الطلبة
+                Object.keys(datesMap).forEach(codeKey => {
+                    if (!matchedCodes.has(codeKey)) {
+                        const rec = datesMap[codeKey];
+                        allStatsData.push({
+                            code: rec.studentCode || '-',
+                            name: rec.studentName || '-',
+                            university: rec.university || '-',
+                            college: rec.college || '-',
+                            department: rec.department || '-',
+                            school: rec.schoolName || '-',
+                            startDate: rec.startDate || '-',
+                            endDate: rec.endDate || '-'
+                        });
+                    }
+                });
+
+                // تحديث خيارات التصفية بالجامعات
+                populateStatsFilters();
+
+                // تحديث العدادات الإحصائية
+                updateStatsCounters();
+
+                // عرض البيانات في الجدول
+                renderStatsTable(allStatsData);
+
+            } catch (e) {
+                console.error("Error loading stats table", e);
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 2rem; color:red;">حدث خطأ أثناء تحميل الإحصائية: ${e.message}</td></tr>`;
+            }
+        };
+
+        function updateStatsCounters() {
+            const total = allStatsData.length;
+            const started = allStatsData.filter(item => item.startDate && item.startDate !== '-').length;
+            const ended = allStatsData.filter(item => item.endDate && item.endDate !== '-').length;
+            const pending = allStatsData.filter(item => !item.startDate || item.startDate === '-').length;
+
+            const elTotal = document.getElementById('stat-total-students');
+            const elStarted = document.getElementById('stat-started-students');
+            const elEnded = document.getElementById('stat-ended-students');
+            const elPending = document.getElementById('stat-pending-students');
+
+            if (elTotal) elTotal.textContent = total;
+            if (elStarted) elStarted.textContent = started;
+            if (elEnded) elEnded.textContent = ended;
+            if (elPending) elPending.textContent = pending;
+        }
+
+        function populateStatsFilters() {
+            const selectUniv = document.getElementById('stats-filter-univ');
+            if (!selectUniv) return;
+            const currentVal = selectUniv.value;
+            const universities = [...new Set(allStatsData.map(item => item.university).filter(u => u && u !== '-'))].sort();
+
+            selectUniv.innerHTML = '<option value="">جميع الجامعات</option>';
+            universities.forEach(u => {
+                selectUniv.innerHTML += `<option value="${u}">${u}</option>`;
+            });
+            selectUniv.value = currentVal;
+        }
+
+        function renderStatsTable(data) {
+            const tbody = document.querySelector('#admin-stats-table tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding: 2rem; color:#888;">لا توجد سجلات مطابقة</td></tr>';
+                return;
+            }
+
+            data.forEach((item, index) => {
+                const startBadge = item.startDate !== '-' 
+                    ? `<span style="background:#eafaf1; color:#27ae60; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:0.9rem;">${item.startDate}</span>` 
+                    : `<span style="color:#aaa;">-</span>`;
+
+                const endBadge = item.endDate !== '-' 
+                    ? `<span style="background:#fef9e7; color:#b7950b; padding:2px 8px; border-radius:4px; font-weight:bold; font-size:0.9rem;">${item.endDate}</span>` 
+                    : `<span style="color:#aaa;">-</span>`;
+
+                tbody.innerHTML += `<tr>
+                    <td>${index + 1}</td>
+                    <td><strong style="color:var(--primary-blue);">${item.code}</strong></td>
+                    <td>${item.name}</td>
+                    <td>${item.university}</td>
+                    <td>${item.college}</td>
+                    <td>${item.department}</td>
+                    <td><span style="font-weight:bold; color:#2c3e50;">${item.school}</span></td>
+                    <td>${startBadge}</td>
+                    <td>${endBadge}</td>
+                </tr>`;
+            });
+        }
+
+        window.filterStatsTable = function () {
+            const search = (document.getElementById('stats-search-input').value || '').trim().toLowerCase();
+            const univ = document.getElementById('stats-filter-univ').value;
+            const status = document.getElementById('stats-filter-status').value;
+
+            const filtered = allStatsData.filter(item => {
+                const matchesSearch = !search || 
+                    item.name.toLowerCase().includes(search) || 
+                    item.code.toLowerCase().includes(search) || 
+                    item.school.toLowerCase().includes(search);
+
+                const matchesUniv = !univ || item.university === univ;
+
+                let matchesStatus = true;
+                if (status === 'started') {
+                    matchesStatus = item.startDate !== '-';
+                } else if (status === 'ended') {
+                    matchesStatus = item.endDate !== '-';
+                } else if (status === 'pending') {
+                    matchesStatus = item.startDate === '-';
+                }
+
+                return matchesSearch && matchesUniv && matchesStatus;
+            });
+
+            renderStatsTable(filtered);
+        };
+
+        window.exportStatsToExcel = function () {
+            let csv = '\uFEFF#,كود الطالب,اسم الطالب الثلاثي,الجامعة,الكلية,القسم,المدرسة التي طبق بها,تاريخ المباشرة,تاريخ الانفكاك\n';
+            allStatsData.forEach((item, index) => {
+                const clean = (str) => `"${(str || '').replace(/"/g, '""')}"`;
+                csv += `${index + 1},${clean(item.code)},${clean(item.name)},${clean(item.university)},${clean(item.college)},${clean(item.department)},${clean(item.school)},${clean(item.startDate)},${clean(item.endDate)}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'احصائية_المطبقين_والمباشرة_والانفكاك.csv';
+            link.click();
+        };
+
+        window.printStatsTable = function () {
+            const printWindow = window.open('', '_blank');
+            const tableHtml = document.getElementById('admin-stats-table').outerHTML;
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html lang="ar" dir="rtl">
+                <head>
+                    <meta charset="utf-8">
+                    <title>إحصائية الطلبة المطبقين والمباشرة والانفكاك</title>
+                    <style>
+                        body { font-family: 'Arial', sans-serif; padding: 20px; direction: rtl; }
+                        h2, h3 { text-align: center; color: #003366; margin: 5px; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 11pt; }
+                        th, td { border: 1px solid #333; padding: 6px 10px; text-align: center; }
+                        th { background-color: #003366; color: white; }
+                        @media print { @page { size: landscape; margin: 1cm; } }
+                    </style>
+                </head>
+                <body>
+                    <h2>وزارة التربية - مديرية تربية المثنى</h2>
+                    <h3>قسم الإعداد والتدريب - شعبة المعاهد</h3>
+                    <h3 style="margin-bottom: 20px;">إحصائية الطلبة المطبقين (المباشرة والانفكاك)</h3>
+                    ${tableHtml}
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            setTimeout(() => {
+                printWindow.print();
+            }, 500);
+        };
+
+        window.clearAllData = async function () {
+            if (confirm('تحذير: سيتم مسح جميع البيانات من قاعدة البيانات نهائياً! هل أنت متأكد؟')) {
+                try {
+                    await db.ref('students').remove();
+                    localStorage.removeItem('students');
+                    loadAdminTable();
+                    alert('تم مسح جميع البيانات من الخادم بنجاح.');
+                } catch (e) {
+                    alert('حدث خطأ أثناء المسح: ' + e.message);
+                }
+            }
+        }
+
+        // Initial background sync
+        window.addEventListener('load', syncData);
+    </script>
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const passInput = document.getElementById('admin-pass');
+            if (passInput) {
+                passInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') adminLogin();
+                });
+            }
+        });
+    </script>
+</body>
+</html>
