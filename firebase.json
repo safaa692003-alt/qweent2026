@@ -1,12 +1,17 @@
 {
   "hosting": {
     "public": ".",
+    "cleanUrls": true,
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],
     "rewrites": [
+      {
+        "source": "/universities",
+        "destination": "/universities.html"
+      },
       {
         "source": "**",
         "destination": "/index.html"
