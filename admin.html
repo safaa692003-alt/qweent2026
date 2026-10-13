@@ -710,11 +710,147 @@
         </section>
 
         <section id="admin-dashboard" class="page-section">
+            <!-- قسم ( اضافة مطبق ) -->
+            <div class="card" id="admin-add-student-card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem; border-bottom: 2px solid var(--border-color); padding-bottom: 1rem;">
+                    <div>
+                        <h2 style="color:var(--primary-blue); font-size:1.4rem;">📋 ( اضافة مطبق )</h2>
+                        <p style="color:#666; font-size:0.9rem; margin-top:0.3rem;">إدخال بيانات مطبق جديد بنفس الحقول والخيارات وحفظه مباشرة في النظام والتقرير التراكمي</p>
+                    </div>
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                        <button type="button" class="btn btn-gold" onclick="resetAdminStudentForm()">🔄 تفريغ الحقول</button>
+                    </div>
+                </div>
+
+                <div id="admin-form-alert" class="alert-box"></div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>الاسم الثلاثي</label>
+                        <input type="text" id="admin-student-name" placeholder="أدخل الاسم الرباعي">
+                    </div>
+                    <div class="form-group">
+                        <label>الكود</label>
+                        <input type="text" id="admin-student-code" placeholder="أدخل الكود الجامعي">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>الجامعة</label>
+                        <select id="admin-student-university" onchange="adminToggleOtherUniversity()">
+                            <option value="">اختر</option>
+                            <option value="جامعة المثنى">جامعة المثنى</option>
+                            <option value="ساوة الاهلية">ساوة الاهلية</option>
+                            <option value="الصادق الاهلية">الصادق الاهلية</option>
+                            <option value="خارج المحافظة">خارج المحافظة</option>
+                        </select>
+                    </div>
+                    <div class="form-group hidden" id="admin-other-univ-group">
+                        <label>اسم الجامعة</label>
+                        <input type="text" id="admin-student-other-university" placeholder="اكتب اسم الجامعة هنا">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>نوع الدراسة</label>
+                        <select id="admin-study-type">
+                            <option value="">اختر</option>
+                            <option value="صباحي">صباحي</option>
+                            <option value="مسائي">مسائي</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>الكلية</label>
+                        <select id="admin-student-college" onchange="adminUpdateDepartments()">
+                            <option value="">اختر الكلية</option>
+                            <option value="التربية الاساسية">التربية الاساسية</option>
+                            <option value="التربية الانسانية">التربية الانسانية</option>
+                            <option value="التربية العلوم الصرفة">التربية العلوم الصرفة</option>
+                            <option value="التربية البدنية">التربية البدنية</option>
+                            <option value="التربية - ساوة">التربية - ساوة</option>
+                            <option value="التربية - الصادق">التربية - الصادق</option>
+                            <option value="الفنون الجميلة">الفنون الجميلة</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>القطاع (المنطقة )</label>
+                        <select id="admin-student-sector" onchange="adminPopulateSchools()">
+                            <option value="">اختر القطاع (المنطقة)</option>
+                            <option value="السماوة">السماوة</option>
+                            <option value="الخضر">الخضر</option>
+                            <option value="الرميثة">الرميثة</option>
+                            <option value="الوركاء">الوركاء</option>
+                            <option value="السوير">السوير</option>
+                            <option value="الكرامة">الكرامة</option>
+                            <option value="الهلال">الهلال</option>
+                            <option value="المجد">المجد</option>
+                            <option value="النجمي">النجمي</option>
+                            <option value="السلمان">السلمان</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>القسم</label>
+                        <select id="admin-student-department" onchange="adminPopulateSchools()">
+                            <option value="">يرجى اختيار الكلية أولاً</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>الجنس</label>
+                        <select id="admin-student-gender">
+                            <option value="">اختر</option>
+                            <option value="ذكر">ذكر</option>
+                            <option value="أنثى">أنثى</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- خيارات المدارس (الخيارات) -->
+                <div style="margin-top: 1.5rem; margin-bottom: 0.8rem; padding-top: 1rem; border-top: 1px dashed var(--border-color);">
+                    <h3 style="color: var(--primary-blue); font-size: 1.1rem; margin-bottom: 1rem;">🏫 خيارات المدارس (الخيارات):</h3>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label style="background: var(--gold-yellow);">الخيار الاول</label>
+                        <select id="admin-school-1" onchange="checkAdminDuplicateSelection()">
+                            <option value="">اختر المدرسة (الخيار الأول)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label style="background: var(--gold-yellow);">الخيار الثاني</label>
+                        <select id="admin-school-2" onchange="checkAdminDuplicateSelection()">
+                            <option value="">اختر المدرسة (الخيار الثاني)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label style="background: var(--gold-yellow);">الخيار الثالث</label>
+                        <select id="admin-school-3" onchange="checkAdminDuplicateSelection()">
+                            <option value="">اختر المدرسة (الخيار الثالث)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="btn-container">
+                    <button type="button" class="btn btn-green" id="admin-save-student-btn" onclick="adminSaveStudent()">💾 حفظ وإضافة المطبق</button>
+                    <button type="button" class="btn btn-gold" onclick="resetAdminStudentForm()">🔄 تفريغ الحقول</button>
+                </div>
+            </div>
+
+
             <div class="card">
                 <div
                     style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
                     <h2 style="color:var(--primary-blue);">لوحة التحكم - التقرير التراكمي</h2>
                     <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                        <button class="btn btn-gold" onclick="document.getElementById('admin-add-student-card').scrollIntoView({behavior:'smooth'})">➕ ( اضافة مطبق )</button>
                         <button class="btn btn-green" onclick="exportToExcel()">excel تقرير تراكمي</button>
                         <button class="btn btn-blue" style="background-color: #2a5298;" onclick="exportToWord()">word
                             تقرير تراكمي</button>
@@ -858,6 +994,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="schools_db.js"></script>
 
     <script>
         const ADMIN_CREDENTIALS = {
@@ -1394,6 +1531,346 @@
                 });
             }
         });
+        // ==========================================
+        // وظائف قسم ( اضافة مطبق ) في لوحة التحكم مع تطبيق قاعدة الاستيعاب (4 لكل مادة ماعدا الإنكليزي 5)
+        // ==========================================
+        function getNormalizedDepartment(dept) {
+            if (!dept) return "";
+            let d = dept.trim();
+            d = d.replace(/\s*-\s*اساسية/g, '');
+            d = d.replace(/\s*-\s*الاساسية/g, '');
+            d = d.replace(/\s*-\s*اساسيه/g, '');
+            d = d.replace(/\s*-\s*الاساسيه/g, '');
+            d = d.replace(/^قسم\s+/, '');
+            if (d === "الانكليزي" || d === "اللغة الانكليزية" || d === "الإنكليزي" || d === "اللغة الإنكليزية") {
+                return "اللغة الانكليزية";
+            }
+            return d;
+        }
+
+        function getMaxCapacityPerSchool(student) {
+            if (!student) return 4;
+            const dept = getNormalizedDepartment(student.department || '');
+            if (dept === 'اللغة الانكليزية') {
+                return 5;
+            }
+            return 4;
+        }
+
+        function checkSchoolAvailability(schoolCode, student, students) {
+            const currentDept = getNormalizedDepartment(student?.department || '');
+            const matchedStudents = (students || []).filter(st => {
+                if (getNormalizedDepartment(st.department) !== currentDept) return false;
+                return st.school1Code === schoolCode;
+            });
+            const maxCapacity = getMaxCapacityPerSchool(student);
+            if (matchedStudents.length >= maxCapacity) {
+                return { available: false, reason: 'full', count: matchedStudents.length, maxCapacity: maxCapacity };
+            }
+            return { available: true, count: matchedStudents.length, maxCapacity: maxCapacity };
+        }
+
+        function adminToggleOtherUniversity() {
+            const uSel = document.getElementById('admin-student-university');
+            const oGrp = document.getElementById('admin-other-univ-group');
+            const oInp = document.getElementById('admin-student-other-university');
+            if (!uSel || !oGrp || !oInp) return;
+            if (uSel.value === 'خارج المحافظة') {
+                oGrp.classList.remove('hidden');
+                oInp.focus();
+            } else {
+                oGrp.classList.add('hidden');
+                oInp.value = '';
+            }
+        }
+
+        function adminUpdateDepartments() {
+            const college = document.getElementById('admin-student-college')?.value || '';
+            const deptSelect = document.getElementById('admin-student-department');
+            if (!deptSelect) return;
+            deptSelect.innerHTML = '<option value="">اختر القسم</option>';
+            if (!college) {
+                deptSelect.innerHTML = '<option value="">يرجى اختيار الكلية أولاً</option>';
+                adminPopulateSchools();
+                return;
+            }
+
+            const deptData = (typeof DEPARTMENTS_DATA !== 'undefined' && DEPARTMENTS_DATA) ? DEPARTMENTS_DATA : {
+                basic: [
+                    "رياض الاطفال - اساسية", "اللغة العربية - اساسية", "التاريخ - اساسية",
+                    "العلــــــوم - اساسية", "الصفوف الاولى - اساسية", "الانكليزي - اساسية",
+                    "الرياضيات - اساسية", "علوم قران - اساسية", "الارشاد التربوي - الاساسية"
+                ],
+                other: [
+                    "اللغة العربية", "اللغة الانكليزية", "التاريخ", "الجغرافيا",
+                    "علوم قران", "علوم الحياة", "الرياضيات", "التربية الفنية", "تربية علوم رياضية"
+                ]
+            };
+
+            const options = (college === 'التربية الاساسية') ? deptData.basic : deptData.other;
+            options.forEach(dept => {
+                const opt = document.createElement('option');
+                opt.value = dept;
+                opt.textContent = dept;
+                deptSelect.appendChild(opt);
+            });
+
+            adminPopulateSchools();
+        }
+
+        function checkAdminDuplicateSelection() {
+            const s1 = document.getElementById('admin-school-1')?.value || '';
+            const s2 = document.getElementById('admin-school-2')?.value || '';
+            const s3 = document.getElementById('admin-school-3')?.value || '';
+
+            ['admin-school-1', 'admin-school-2', 'admin-school-3'].forEach(id => {
+                const sel = document.getElementById(id);
+                if (!sel) return;
+                Array.from(sel.options).forEach(opt => {
+                    if (opt.value === '') return;
+                    const val = opt.value;
+                    const isSelectedElsewhere = (id !== 'admin-school-1' && s1 === val) ||
+                                                (id !== 'admin-school-2' && s2 === val) ||
+                                                (id !== 'admin-school-3' && s3 === val);
+                    const isFull = opt.dataset.full === 'true';
+                    opt.disabled = isFull || isSelectedElsewhere;
+                });
+            });
+        }
+
+        function adminPopulateSchools() {
+            const sector = document.getElementById('admin-student-sector')?.value || '';
+            const college = document.getElementById('admin-student-college')?.value || '';
+            const dept = document.getElementById('admin-student-department')?.value || '';
+
+            const s1 = document.getElementById('admin-school-1');
+            const s2 = document.getElementById('admin-school-2');
+            const s3 = document.getElementById('admin-school-3');
+            if (!s1 || !s2 || !s3) return;
+
+            let defaultText = 'اختر المدرسة';
+            if (!sector) {
+                defaultText = 'يرجى اختيار القطاع أولاً';
+            } else if (!dept) {
+                defaultText = 'يرجى اختيار الكلية والقسم أولاً';
+            }
+
+            const schoolsDb = (typeof SCHOOLS_DB !== 'undefined' && Array.isArray(SCHOOLS_DB)) ? SCHOOLS_DB : (window.SCHOOLS_DB || []);
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+            const tempStudent = { college, department: dept, sector };
+            const normDept = getNormalizedDepartment(dept);
+
+            [s1, s2, s3].forEach(sel => {
+                const prevVal = sel.value;
+                sel.innerHTML = `<option value="">${defaultText}</option>`;
+                if (!sector || schoolsDb.length === 0) return;
+
+                let filteredSchools;
+                if ((college === 'التربية الانسانية' || college === 'التربية الاساسية') && normDept === 'اللغة الانكليزية') {
+                    filteredSchools = schoolsDb.filter(s => s.sector === sector);
+                } else {
+                    const listType = (college === 'التربية الاساسية') ? '1' : '2';
+                    filteredSchools = schoolsDb.filter(s => s.sector === sector && (s.list === listType || !s.list));
+                    if (filteredSchools.length === 0) {
+                        filteredSchools = schoolsDb.filter(s => s.sector === sector);
+                    }
+                }
+
+                filteredSchools.forEach(sch => {
+                    const opt = document.createElement('option');
+                    opt.value = sch.code;
+                    opt.dataset.name = sch.name;
+
+                    if (dept) {
+                        const availability = checkSchoolAvailability(sch.code, tempStudent, students);
+                        opt.textContent = `${sch.name} (${availability.count}/${availability.maxCapacity})`;
+                        if (!availability.available) {
+                            opt.disabled = true;
+                            opt.dataset.full = 'true';
+                            opt.className = 'school-full';
+                            opt.style.color = '#d32f2f';
+                            opt.style.backgroundColor = '#ffcdd2';
+                            opt.textContent = `✗ ${sch.name} (${availability.count}/${availability.maxCapacity} - مكتملة)`;
+                        }
+                    } else {
+                        opt.textContent = `${sch.name} (${sch.code})`;
+                    }
+
+                    sel.appendChild(opt);
+                });
+
+                sel.value = prevVal;
+            });
+
+            checkAdminDuplicateSelection();
+        }
+
+        async function adminSaveStudent() {
+            const alertEl = document.getElementById('admin-form-alert');
+            function showAddAlert(msg, isSuccess = false) {
+                if (!alertEl) return;
+                alertEl.style.display = 'block';
+                alertEl.style.backgroundColor = isSuccess ? '#d4edda' : '#ffebee';
+                alertEl.style.color = isSuccess ? '#155724' : '#c62828';
+                alertEl.style.borderColor = isSuccess ? '#c3e6cb' : '#ffcdd2';
+                alertEl.textContent = msg;
+                if (!isSuccess) {
+                    setTimeout(() => { if (alertEl) alertEl.style.display = 'none'; }, 5000);
+                }
+            }
+
+            const name = document.getElementById('admin-student-name')?.value.trim();
+            const code = document.getElementById('admin-student-code')?.value.trim();
+            const univSelect = document.getElementById('admin-student-university')?.value;
+            let univ = univSelect;
+            if (univSelect === 'خارج المحافظة') {
+                const other = document.getElementById('admin-student-other-university')?.value.trim();
+                if (!other) {
+                    showAddAlert('يرجى كتابة اسم الجامعة في الحقل المخصص');
+                    return;
+                }
+                univ = other;
+            }
+
+            const studyType = document.getElementById('admin-study-type')?.value;
+            const college = document.getElementById('admin-student-college')?.value;
+            const sector = document.getElementById('admin-student-sector')?.value;
+            const department = document.getElementById('admin-student-department')?.value;
+            const gender = document.getElementById('admin-student-gender')?.value;
+
+            if (!name || !code || !univ || !studyType || !college || !sector || !department || !gender) {
+                showAddAlert('يرجى ملء جميع الحقول الأساسية للطالب قبل الحفظ');
+                return;
+            }
+
+            const s1Sel = document.getElementById('admin-school-1');
+            const s2Sel = document.getElementById('admin-school-2');
+            const s3Sel = document.getElementById('admin-school-3');
+
+            const s1Code = s1Sel?.value || '';
+            const s2Code = s2Sel?.value || '';
+            const s3Code = s3Sel?.value || '';
+
+            if (!s1Code || !s2Code || !s3Code) {
+                showAddAlert('يرجى اختيار المدارس الثلاث (الخيار الأول والثاني والثالث)');
+                return;
+            }
+
+            if (s1Code === s2Code || s1Code === s3Code || s2Code === s3Code) {
+                showAddAlert('يجب أن تكون المدارس الثلاث المختارة مختلفة');
+                return;
+            }
+
+            // التحقق من الطاقة الاستيعابية: 4 مطبقين لنفس المادة ما عدا اللغة الإنكليزية 5
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+            const tempStudent = { college, department, sector };
+            const schoolsDb = (typeof SCHOOLS_DB !== 'undefined' && Array.isArray(SCHOOLS_DB)) ? SCHOOLS_DB : (window.SCHOOLS_DB || []);
+
+            const selectedChoices = [
+                { code: s1Code, label: 'الخيار الأول' },
+                { code: s2Code, label: 'الخيار الثاني' },
+                { code: s3Code, label: 'الخيار الثالث' }
+            ];
+
+            for (const item of selectedChoices) {
+                const availability = checkSchoolAvailability(item.code, tempStudent, students);
+                if (!availability.available) {
+                    const sch = schoolsDb.find(s => s.code === item.code);
+                    const schName = sch ? sch.name : item.code;
+                    showAddAlert(`عذراً، المدرسة "${schName}" المحددة في (${item.label}) مكتملة لقسم ${department} (${availability.count}/${availability.maxCapacity} مطبقين) ولا يمكن الاختيار منها.`);
+                    return;
+                }
+            }
+
+            const s1Name = s1Sel?.selectedOptions[0]?.dataset.name || (s1Code ? schoolsDb.find(s => s.code === s1Code)?.name : '') || '';
+            const s2Name = s2Sel?.selectedOptions[0]?.dataset.name || (s2Code ? schoolsDb.find(s => s.code === s2Code)?.name : '') || '';
+            const s3Name = s3Sel?.selectedOptions[0]?.dataset.name || (s3Code ? schoolsDb.find(s => s.code === s3Code)?.name : '') || '';
+
+            const newStudent = {
+                name,
+                code,
+                university: univ,
+                studyType,
+                college,
+                sector,
+                department,
+                gender,
+                school1Code: s1Code,
+                school1Name: s1Name,
+                school2Code: s2Code,
+                school2Name: s2Name,
+                school3Code: s3Code,
+                school3Name: s3Name,
+                addedBy: 'admin',
+                timestamp: new Date().toISOString()
+            };
+
+            const btn = document.getElementById('admin-save-student-btn');
+            const origText = btn ? btn.textContent : '';
+            if (btn) {
+                btn.textContent = 'جاري الحفظ... ⏳';
+                btn.disabled = true;
+            }
+
+            try {
+                // 1. التخزين المحلي
+                students.push(newStudent);
+                localStorage.setItem('students', JSON.stringify(students));
+
+                // 2. الحفظ في Firebase
+                if (typeof db !== 'undefined' && db && db.ref) {
+                    try {
+                        await db.ref('students').push(newStudent);
+                    } catch (fbErr) {
+                        console.warn('Firebase push warning:', fbErr);
+                    }
+                }
+
+                // 3. تحديث الجداول
+                if (typeof loadAdminTable === 'function') {
+                    await loadAdminTable();
+                }
+
+                showAddAlert(`✓ تمت إضافة المطبق (${name}) بنجاح إلى قاعدة البيانات والتقرير التراكمي!`, true);
+                resetAdminStudentForm(false);
+                setTimeout(() => {
+                    if (alertEl) alertEl.style.display = 'none';
+                }, 5000);
+            } catch (err) {
+                console.error('Error saving student:', err);
+                showAddAlert('حدث خطأ أثناء الحفظ: ' + err.message);
+            } finally {
+                if (btn) {
+                    btn.textContent = origText;
+                    btn.disabled = false;
+                }
+            }
+        }
+
+        function resetAdminStudentForm(clearAlert = true) {
+            ['admin-student-name', 'admin-student-code', 'admin-student-other-university'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            ['admin-student-university', 'admin-study-type', 'admin-student-college', 'admin-student-sector', 'admin-student-gender'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            const deptSel = document.getElementById('admin-student-department');
+            if (deptSel) deptSel.innerHTML = '<option value="">يرجى اختيار الكلية أولاً</option>';
+            const otherGrp = document.getElementById('admin-other-univ-group');
+            if (otherGrp) otherGrp.classList.add('hidden');
+            ['admin-school-1', 'admin-school-2', 'admin-school-3'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = '<option value="">يرجى اختيار القطاع أولاً</option>';
+            });
+            if (clearAlert) {
+                const alertEl = document.getElementById('admin-form-alert');
+                if (alertEl) alertEl.style.display = 'none';
+            }
+        }
+
+
     </script>
 </body>
 </html>
