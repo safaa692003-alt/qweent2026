@@ -361,6 +361,85 @@
             flex: 1;
         }
 
+        .login-input-group select {
+            flex: 1;
+            font-size: 1rem;
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-weight: bold;
+            background: white;
+            width: 100%;
+        }
+
+        /* Principal Cards Layout */
+        .principal-cards-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            gap: 2rem;
+            max-width: 1100px;
+            margin: 3rem auto;
+            padding: 0 1rem;
+            flex-wrap: wrap;
+        }
+
+        .principal-cards-wrapper .login-card {
+            flex: 1 1 420px;
+            max-width: 500px;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+            border-radius: 8px;
+            background: white;
+            text-align: center;
+        }
+
+        .principal-cards-wrapper .login-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .principal-cards-wrapper .login-input-group label {
+            min-width: 130px;
+            text-align: center;
+            justify-content: center;
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .selected-code-badge {
+            min-height: 2.2rem;
+            margin-top: 0.8rem;
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: var(--success-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            border-radius: 6px;
+            padding: 0.3rem 0.6rem;
+        }
+
+        @media (max-width: 900px) {
+            .principal-cards-wrapper {
+                flex-direction: column;
+                align-items: center;
+                gap: 1.5rem;
+                margin: 1.5rem auto;
+            }
+            .principal-cards-wrapper .login-card {
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+
+
         /* Review Section */
         .review-grid {
             display: grid;
@@ -1187,20 +1266,53 @@
                     </div>
                 </div>
         </section>
-        <!-- صفحة دخول مدير المدرسة -->
+                <!-- صفحة دخول مدير المدرسة -->
         <section id="principal-login" class="page-section">
-            <div class="login-card">
-                <div class="login-header" style="background: var(--principal-orange);">تسجيل الدخول كمدير مدرسة</div>
-                <div class="login-body">
-                    <p style="margin-bottom: 1.5rem; color: #666;">أدخل الكود الخاص بمدرستك لعرض قائمة الطلاب المسجلين
-                        فيها</p>
-                    <div id="principal-alert" class="alert-box"></div>
-                    <div class="login-input-group">
-                        <label style="background: var(--principal-orange);">كود المدرسة</label>
-                        <input type="text" id="principal-code-input">
+            <div class="principal-cards-wrapper">
+                <!-- جدول منفصل: تحديد القطاع واسم المدرسة -->
+                <div class="login-card">
+                    <div class="login-header" style="background: var(--principal-orange);">البحث عن كود المدرسة</div>
+                    <div class="login-body">
+                        <p style="margin-bottom: 1.5rem; color: #666;">اختر القطاع ثم حدد مدرستك لإظهار الكود في الجدول المرفق</p>
+                        <div class="login-input-group">
+                            <label style="background: var(--principal-orange);">القطاع</label>
+                            <select id="principal-sector-select" onchange="onPrincipalSectorChange()">
+                                <option value="">-- اختر القطاع --</option>
+                                <option value="السماوة">السماوة</option>
+                                <option value="الرميثة">الرميثة</option>
+                                <option value="الخضر">الخضر</option>
+                                <option value="السلمان">السلمان</option>
+                                <option value="السوير">السوير</option>
+                                <option value="المجد">المجد</option>
+                                <option value="النجمي">النجمي</option>
+                                <option value="الهلال">الهلال</option>
+                                <option value="الوركاء">الوركاء</option>
+                                <option value="الكرامة">الكرامة</option>
+                            </select>
+                        </div>
+                        <div class="login-input-group">
+                            <label style="background: var(--principal-orange);">اسم المدرسة</label>
+                            <select id="principal-school-select" onchange="onPrincipalSchoolChange()" disabled>
+                                <option value="">-- اختر القطاع أولاً --</option>
+                            </select>
+                        </div>
+                        <div id="principal-selected-code-display" class="selected-code-badge"></div>
                     </div>
-                    <button class="btn btn-orange" style="width: 100%; margin-top: 1rem;"
-                        onclick="principalSearch()">عرض القائمة</button>
+                </div>
+
+                <!-- جدول تسجيل الدخول كمدير مدرسة (المرفق صورته) -->
+                <div class="login-card">
+                    <div class="login-header" style="background: var(--principal-orange);">تسجيل الدخول كمدير مدرسة</div>
+                    <div class="login-body">
+                        <p style="margin-bottom: 1.5rem; color: #666;">أدخل الكود الخاص بمدرستك لعرض قائمة الطلاب المسجلين فيها</p>
+                        <div id="principal-alert" class="alert-box"></div>
+                        <div class="login-input-group">
+                            <label style="background: var(--principal-orange);">كود المدرسة</label>
+                            <input type="text" id="principal-code-input" placeholder="يظهر الكود هنا تلقائياً أو أدخله يدوياً" oninput="syncDropdownsFromCodeInput()">
+                        </div>
+                        <button class="btn btn-orange" style="width: 100%; margin-top: 1rem;"
+                            onclick="principalSearch()">عرض القائمة</button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1806,6 +1918,7 @@
         };
 
         function showPage(pageId) {
+            if (pageId === 'principal-login') { initPrincipalSchoolSelectors(); }
             if (pageId === 'admin-dashboard') {
                 const isLocalAdmin = sessionStorage.getItem('isAdminLoggedIn') === 'true';
                 const isFbAdmin = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser);
@@ -2198,6 +2311,147 @@
         }
 
         let currentPrincipalFiltered = [];
+
+        
+        function initPrincipalSchoolSelectors() {
+            const sectorSelect = document.getElementById('principal-sector-select');
+            if (!sectorSelect) return;
+
+            const db = (typeof SCHOOLS_DB !== 'undefined' && Array.isArray(SCHOOLS_DB)) ? SCHOOLS_DB : (window.SCHOOLS_DB || []);
+            if (!db || db.length === 0) return;
+
+            const sectors = [];
+            db.forEach(s => {
+                if (s.sector && !sectors.includes(s.sector)) {
+                    sectors.push(s.sector);
+                }
+            });
+
+            const currentVal = sectorSelect.value;
+            sectorSelect.innerHTML = '<option value="">-- اختر القطاع --</option>';
+            sectors.forEach(sec => {
+                const opt = document.createElement('option');
+                opt.value = sec;
+                opt.textContent = sec;
+                sectorSelect.appendChild(opt);
+            });
+
+            if (currentVal && sectors.includes(currentVal)) {
+                sectorSelect.value = currentVal;
+            }
+
+            const codeInput = document.getElementById('principal-code-input');
+            if (codeInput && codeInput.value.trim()) {
+                syncDropdownsFromCodeInput();
+            }
+        }
+
+        function onPrincipalSectorChange() {
+            const sectorSelect = document.getElementById('principal-sector-select');
+            const schoolSelect = document.getElementById('principal-school-select');
+            const codeInput = document.getElementById('principal-code-input');
+            const hint = document.getElementById('principal-selected-code-display');
+            if (!sectorSelect || !schoolSelect) return;
+
+            const selectedSector = sectorSelect.value;
+            schoolSelect.innerHTML = '';
+
+            if (!selectedSector) {
+                schoolSelect.disabled = true;
+                const opt = document.createElement('option');
+                opt.value = '';
+                opt.textContent = '-- اختر القطاع أولاً --';
+                schoolSelect.appendChild(opt);
+                if (codeInput) codeInput.value = '';
+                if (hint) hint.innerHTML = '';
+                return;
+            }
+
+            const db = (typeof SCHOOLS_DB !== 'undefined' && Array.isArray(SCHOOLS_DB)) ? SCHOOLS_DB : (window.SCHOOLS_DB || []);
+            const schoolsInSector = db.filter(s => s.sector === selectedSector);
+
+            schoolsInSector.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+
+            const defaultOpt = document.createElement('option');
+            defaultOpt.value = '';
+            defaultOpt.textContent = `-- اختر اسم المدرسة (${schoolsInSector.length} مدرسة) --`;
+            schoolSelect.appendChild(defaultOpt);
+
+            schoolsInSector.forEach(school => {
+                const opt = document.createElement('option');
+                opt.value = school.code;
+                opt.textContent = school.name;
+                schoolSelect.appendChild(opt);
+            });
+
+            schoolSelect.disabled = false;
+            if (codeInput) codeInput.value = '';
+            if (hint) hint.innerHTML = '';
+        }
+
+        function onPrincipalSchoolChange() {
+            const schoolSelect = document.getElementById('principal-school-select');
+            const codeInput = document.getElementById('principal-code-input');
+            const hint = document.getElementById('principal-selected-code-display');
+            if (!schoolSelect || !codeInput) return;
+
+            const selectedCode = schoolSelect.value;
+            if (!selectedCode) {
+                codeInput.value = '';
+                if (hint) hint.innerHTML = '';
+                return;
+            }
+
+            const db = (typeof SCHOOLS_DB !== 'undefined' && Array.isArray(SCHOOLS_DB)) ? SCHOOLS_DB : (window.SCHOOLS_DB || []);
+            const school = db.find(s => s.code.toLowerCase() === selectedCode.toLowerCase());
+
+            if (school) {
+                codeInput.value = school.code;
+
+                // Visual flash highlight on the code input in the attached table
+                codeInput.style.transition = 'all 0.3s ease';
+                codeInput.style.borderColor = '#27ae60';
+                codeInput.style.boxShadow = '0 0 10px rgba(39, 174, 96, 0.45)';
+                codeInput.style.backgroundColor = '#e8f8f5';
+                setTimeout(() => {
+                    codeInput.style.borderColor = '';
+                    codeInput.style.boxShadow = '';
+                    codeInput.style.backgroundColor = '';
+                }, 1200);
+
+                if (hint) {
+                    hint.innerHTML = `✅ تم إدراج الكود: <strong style="color: var(--principal-orange); font-size: 1.15rem; margin: 0 4px;">${school.code}</strong> في الجدول`;
+                }
+            }
+        }
+
+        function syncDropdownsFromCodeInput() {
+            const codeInput = document.getElementById('principal-code-input');
+            const sectorSelect = document.getElementById('principal-sector-select');
+            const schoolSelect = document.getElementById('principal-school-select');
+            const hint = document.getElementById('principal-selected-code-display');
+            if (!codeInput || !sectorSelect || !schoolSelect) return;
+
+            const val = codeInput.value.trim().toLowerCase();
+            if (!val) {
+                if (hint) hint.innerHTML = '';
+                return;
+            }
+
+            const db = (typeof SCHOOLS_DB !== 'undefined' && Array.isArray(SCHOOLS_DB)) ? SCHOOLS_DB : (window.SCHOOLS_DB || []);
+            const school = db.find(s => s.code.toLowerCase() === val);
+
+            if (school) {
+                if (sectorSelect.value !== school.sector) {
+                    sectorSelect.value = school.sector;
+                    onPrincipalSectorChange();
+                }
+                schoolSelect.value = school.code;
+                if (hint) {
+                    hint.innerHTML = `✅ المدرسة: <strong>${school.name}</strong> (${school.sector})`;
+                }
+            }
+        }
 
         function principalSearch() {
             const code = document.getElementById('principal-code-input').value.trim().toLowerCase();
