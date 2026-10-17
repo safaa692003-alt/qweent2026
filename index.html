@@ -768,6 +768,58 @@
         </div>
     </div>
 
+    <!-- Excel Import Modal -->
+    <div id="excel-import-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:99999; justify-content:center; align-items:center; padding:1rem;">
+        <div class="excel-import-card" style="background:#fff; border-radius:14px; padding:1.8rem; max-width:700px; width:100%; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.3); text-align:right; direction:rtl; font-family:'Arial', sans-serif;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #eef2f5; padding-bottom:0.8rem; margin-bottom:1.2rem;">
+                <h3 style="color:var(--primary-blue); margin:0; display:flex; align-items:center; gap:0.5rem; font-size:1.3rem;">
+                    📥 استيراد بيانات المطبقين من ملف Excel
+                </h3>
+                <button type="button" onclick="closeExcelImportModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#888;">&times;</button>
+            </div>
+
+            <div style="background:#f8f9fa; border:1px solid #e2e8f0; border-radius:8px; padding:1rem; margin-bottom:1.2rem;">
+                <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.5rem;">
+                    <div>📄 <strong>اسم الملف:</strong> <span id="import-file-name" style="color:var(--nav-blue);"></span></div>
+                    <div>📊 <strong>إجمالي السجلات المستخرجة:</strong> <span id="import-total-count" style="font-weight:bold; color:var(--success-green); font-size:1.1rem;">0</span> طالب</div>
+                </div>
+                <div style="margin-top:0.5rem;">
+                    <strong>الجامعات والكليات المكتشفة (<span id="import-colleges-count">0</span>):</strong>
+                    <div id="import-colleges-summary" style="margin-top:0.4rem; display:flex; flex-wrap:wrap; gap:0.3rem;"></div>
+                </div>
+            </div>
+
+            <div style="margin-bottom:1.2rem;">
+                <h4 style="color:#444; margin-bottom:0.5rem; font-size:0.95rem;">معاينة أول 5 سجلات من الملف المستورد:</h4>
+                <div style="max-height:180px; overflow-y:auto; border:1px solid #ddd; border-radius:6px;">
+                    <table style="width:100%; border-collapse:collapse; font-size:0.85rem; text-align:center;">
+                        <thead>
+                            <tr style="background:#003366; color:white;">
+                                <th style="padding:6px;">#</th>
+                                <th style="padding:6px;">الاسم الثلاثي</th>
+                                <th style="padding:6px;">الكود</th>
+                                <th style="padding:6px;">الجامعة</th>
+                                <th style="padding:6px;">الكلية</th>
+                                <th style="padding:6px;">القسم</th>
+                                <th style="padding:6px;">القطاع</th>
+                                <th style="padding:6px;">نوع الدراسة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="import-preview-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="import-modal-status" style="display:none; text-align:center; padding:0.8rem; margin-bottom:1rem; background:#fff3cd; border-radius:6px; border:1px solid #ffeeba;"></div>
+
+            <div id="import-action-buttons" style="display:flex; gap:0.8rem; justify-content:flex-end; flex-wrap:wrap;">
+                <button type="button" class="btn btn-green" onclick="confirmExcelImport('append')">➕ دمج مع السجلات الحالية</button>
+                <button type="button" class="btn btn-gold" onclick="confirmExcelImport('replace')">🔄 استبدال كافة السجلات</button>
+                <button type="button" class="btn btn-blue" style="background:#6c757d;" onclick="closeExcelImportModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
     <header>
         <div class="header-title">
             <h1>وزارة التربية</h1>
@@ -1133,6 +1185,8 @@
                     <h2 style="color:var(--primary-blue);">لوحة التحكم - التقرير التراكمي</h2>
                     <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
                         <button class="btn btn-gold" onclick="document.getElementById('admin-add-student-card').scrollIntoView({behavior:'smooth'})">➕ ( اضافة مطبق )</button>
+                        <button class="btn btn-green" style="background-color: #1e7e34;" onclick="triggerExcelImport()">📥 استيراد من excel</button>
+                        <input type="file" id="admin-excel-import-file" accept=".xlsx, .xls" style="display:none;" onchange="handleExcelImport(event)">
                         <button class="btn btn-green" onclick="exportToExcel()">excel تقرير تراكمي</button>
                         <button class="btn btn-blue" style="background-color: #2a5298;" onclick="exportToWord()">word
                             تقرير تراكمي</button>
@@ -2267,13 +2321,539 @@
             showPage('admin-login');
         }
         function clearAllData() { if (confirm('هل أنت متأكد من مسح جميع المعلومات المدخلة؟')) { localStorage.removeItem('students'); loadAdminTable(); alert('تم المسح'); } }
-        function exportToExcel() {
-            const students = JSON.parse(localStorage.getItem('students')) || [];
-            let csv = '\uFEFF#,الاسم,الكود,الجامعة,الكلية,القسم,القطاع,الدراسة,الجنس,خيار1,خيار2,خيار3\n';
-            students.forEach((s, i) => csv += `${i + 1},${s.name},${s.code},${s.university},${s.college},${s.department},${s.sector},${s.studyType},${s.gender},${s.school1Name},${s.school2Name},${s.school3Name}\n`);
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'تقرير_المطبقين.csv'; link.click();
+        // --- دوال تصدير وفرز الإكسيل حسب الجامعة والكلية واستيراد الملفات ---
+        function escapeXml(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&apos;');
         }
+
+        function sanitizeSheetName(rawName, existingNames) {
+            let name = String(rawName || 'ورقة')
+                .replace(/[:\\/\?\*\[\]]/g, '-')
+                .replace(/^'+|'+$/g, '')
+                .trim();
+            if (!name) name = 'بيانات';
+
+            // إذا زاد الاسم عن 31 حرفاً وهو الحد الأقصى للإكسيل يتم اختصاره بذكاء
+            if (name.length > 31) {
+                name = name.replace(/جامعة\s*/g, 'ج.').replace(/كلية\s*/g, 'ك.');
+                if (name.length > 31) {
+                    name = name.substring(0, 31).trim();
+                }
+            }
+
+            // ضمان عدم تكرار اسم ورقة العمل داخل نفس الملف
+            let finalName = name;
+            let counter = 2;
+            while (existingNames && existingNames.has(finalName)) {
+                const suffix = `_${counter}`;
+                const base = name.substring(0, Math.max(1, 31 - suffix.length));
+                finalName = `${base}${suffix}`;
+                counter++;
+            }
+            if (existingNames) existingNames.add(finalName);
+            return finalName;
+        }
+
+        function saveMultiSheetExcel(sheetsMap, fileName) {
+            if (!sheetsMap || Object.keys(sheetsMap).length === 0) {
+                alert('لا توجد بيانات متاحة للتصدير');
+                return;
+            }
+
+            if (typeof XLSX !== 'undefined') {
+                try {
+                    const wb = XLSX.utils.book_new();
+                    const usedNames = new Set();
+
+                    Object.keys(sheetsMap).forEach(title => {
+                        const rows = sheetsMap[title];
+                        if (!rows || rows.length <= 1) return;
+
+                        const safeName = sanitizeSheetName(title, usedNames);
+                        const ws = XLSX.utils.aoa_to_sheet(rows);
+                        ws['!views'] = [{ RTL: true, rightToLeft: true }];
+
+                        const colWidths = [];
+                        rows.forEach(row => {
+                            row.forEach((cell, colIdx) => {
+                                const text = (cell === null || cell === undefined) ? '' : String(cell);
+                                colWidths[colIdx] = Math.max(colWidths[colIdx] || 12, Math.min(text.length + 4, 45));
+                            });
+                        });
+                        ws['!cols'] = colWidths.map(w => ({ wch: w }));
+
+                        XLSX.utils.book_append_sheet(wb, ws, safeName);
+                    });
+
+                    if (wb.SheetNames.length === 0) {
+                        alert('لا توجد بيانات لتصديرها');
+                        return;
+                    }
+
+                    XLSX.writeFile(wb, fileName + '.xlsx');
+                    return;
+                } catch (e) {
+                    console.error('Multi-sheet XLSX export error:', e);
+                }
+            }
+
+            // Fallback: Multi-worksheet XML Spreadsheet
+            let xmlContent = '<?xml version="1.0" encoding="UTF-8"?>';
+            xmlContent += '<?mso-application progid="Excel.Sheet"?>';
+            xmlContent += '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40">';
+            xmlContent += '<Styles>';
+            xmlContent += '<Style ss:ID="Default" ss:Name="Normal"><Alignment ss:Vertical="Center" ss:Horizontal="Center"/><Font ss:FontName="Arial" ss:Size="11"/></Style>';
+            xmlContent += '<Style ss:ID="HeaderStyle"><Alignment ss:Vertical="Center" ss:Horizontal="Center"/><Font ss:FontName="Arial" ss:Size="11" ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#003366" ss:Pattern="Solid"/></Style>';
+            xmlContent += '</Styles>';
+
+            const usedNames = new Set();
+            Object.keys(sheetsMap).forEach(title => {
+                const rows = sheetsMap[title];
+                if (!rows || rows.length <= 1) return;
+                const safeName = sanitizeSheetName(title, usedNames);
+
+                xmlContent += `<Worksheet ss:Name="${escapeXml(safeName)}" ss:RightToLeft="1"><Table>`;
+                rows.forEach((row, rIdx) => {
+                    xmlContent += '<Row>';
+                    row.forEach(cell => {
+                        const val = (cell === null || cell === undefined) ? '' : String(cell);
+                        const styleAttr = rIdx === 0 ? ' ss:StyleID="HeaderStyle"' : '';
+                        xmlContent += `<Cell${styleAttr}><Data ss:Type="String">${escapeXml(val)}</Data></Cell>`;
+                    });
+                    xmlContent += '</Row>';
+                });
+                xmlContent += '</Table></Worksheet>';
+            });
+
+            xmlContent += '</Workbook>';
+
+            const blob = new Blob(['\uFEFF', xmlContent], { type: 'application/vnd.ms-excel;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = fileName + '.xls';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function exportGroupedByUnivCollege(items, headers, rowMapper, fileName) {
+            if (!items || !items.length) {
+                alert('لا توجد بيانات متاحة للتصدير حالياً');
+                return;
+            }
+
+            // 1. تجميع البيانات حسب الجامعة والكلية
+            const groups = {};
+            items.forEach(item => {
+                const univ = (item.university || 'جامعة غير محددة').trim();
+                const col = (item.college || 'كلية غير محددة').trim();
+                const key = `${univ} ||| ${col}`;
+                if (!groups[key]) {
+                    groups[key] = {
+                        university: univ,
+                        college: col,
+                        list: []
+                    };
+                }
+                groups[key].list.push(item);
+            });
+
+            // 2. فرز أوراق العمل حسب الجامعة ثم الكلية أبجدياً
+            const sortedKeys = Object.keys(groups).sort((a, b) => {
+                const [uA, cA] = a.split(' ||| ');
+                const [uB, cB] = b.split(' ||| ');
+                const uComp = uA.localeCompare(uB, 'ar');
+                if (uComp !== 0) return uComp;
+                return cA.localeCompare(cB, 'ar');
+            });
+
+            // 3. تجهيز أوراق العمل مع فرز السجلات وإعادة الترقيم
+            const sheetsMap = {};
+            sortedKeys.forEach(key => {
+                const grp = groups[key];
+                // فرز السجلات داخل الكلية: القسم -> الاسم
+                grp.list.sort((a, b) => {
+                    const dComp = (a.department || '').localeCompare(b.department || '', 'ar');
+                    if (dComp !== 0) return dComp;
+                    const nameA = a.name || a.studentName || '';
+                    const nameB = b.name || b.studentName || '';
+                    return nameA.localeCompare(nameB, 'ar');
+                });
+
+                const sheetTitle = `${grp.university} - ${grp.college}`;
+                const sheetRows = [headers];
+                grp.list.forEach((item, idx) => {
+                    sheetRows.push(rowMapper(item, idx));
+                });
+                sheetsMap[sheetTitle] = sheetRows;
+            });
+
+            // 4. حفظ المصنف بأوراق عمل منفصلة لكل جامعة وكلية
+            saveMultiSheetExcel(sheetsMap, fileName);
+        }
+
+        function saveDataToExcel(dataRows, fileName, sheetName = 'بيانات') {
+            if (!dataRows || !dataRows.length) return;
+            const map = {};
+            map[sheetName] = dataRows;
+            saveMultiSheetExcel(map, fileName);
+        }
+
+        function exportToExcel() {
+            let students = JSON.parse(localStorage.getItem('students')) || [];
+
+            // إذا كان التخزين المحلي فارغاً، نحاول القراءة من الجدول الظاهر
+            if (!students.length) {
+                const bodyRows = document.querySelectorAll('#admin-table tbody tr');
+                bodyRows.forEach(tr => {
+                    const tds = Array.from(tr.querySelectorAll('td')).map(td => td.textContent.trim());
+                    if (tds.length >= 10 && !tds[0].includes('جاري') && !tds[0].includes('لا توجد')) {
+                        students.push({
+                            name: tds[1] || '',
+                            code: tds[2] || '',
+                            university: tds[3] || '',
+                            college: tds[4] || '',
+                            department: tds[5] || '',
+                            sector: tds[6] || '',
+                            studyType: tds[7] || '',
+                            gender: tds[8] || '',
+                            school1Name: tds[9] || '',
+                            school2Name: tds[10] || '',
+                            school3Name: tds[11] || ''
+                        });
+                    }
+                });
+            }
+
+            if (!students.length) {
+                alert('لا توجد بيانات متاحة للتصدير حالياً');
+                return;
+            }
+
+            const headers = ['#', 'الاسم الثلاثي', 'الكود', 'الجامعة', 'الكلية', 'القسم', 'القطاع', 'نوع الدراسة', 'الجنس', 'الخيار الاول', 'الخيار الثاني', 'الخيار الثالث'];
+
+            exportGroupedByUnivCollege(
+                students,
+                headers,
+                (s, idx) => [
+                    idx + 1,
+                    s.name || '',
+                    s.code ? String(s.code) : '',
+                    s.university || '',
+                    s.college || '',
+                    s.department || '',
+                    s.sector || '',
+                    s.studyType || '',
+                    s.gender || '',
+                    s.school1Name || '',
+                    s.school2Name || '',
+                    s.school3Name || ''
+                ],
+                'التقرير_التراكمي_مفروز_حسب_الجامعة_والكلية'
+            );
+        }
+
+        // --- وظائف استيراد الإكسيل إلى لوحة التحكم ---
+        let pendingImportStudents = [];
+
+        function triggerExcelImport() {
+            const input = document.getElementById('admin-excel-import-file');
+            if (input) {
+                input.value = '';
+                input.click();
+            }
+        }
+
+        function handleExcelImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (typeof XLSX === 'undefined') {
+                alert('خطأ: مكتبة قراءة ملفات الإكسيل (XLSX) غير متوفرة.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+
+                    const extractedStudents = [];
+
+                    workbook.SheetNames.forEach(sheetName => {
+                        const sheet = workbook.Sheets[sheetName];
+                        if (!sheet) return;
+
+                        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+                        if (!rows || rows.length < 2) return;
+
+                        let sheetUniv = '';
+                        let sheetCol = '';
+                        if (sheetName.includes('-')) {
+                            const parts = sheetName.split('-').map(p => p.trim());
+                            if (parts.length >= 2) {
+                                sheetUniv = parts[0];
+                                sheetCol = parts.slice(1).join(' - ');
+                            }
+                        }
+
+                        let headerRowIdx = -1;
+                        let colMap = {};
+
+                        for (let r = 0; r < Math.min(rows.length, 10); r++) {
+                            const row = rows[r];
+                            if (!row || !row.length) continue;
+
+                            const testMap = mapExcelHeaders(row);
+                            if (testMap.name !== undefined) {
+                                headerRowIdx = r;
+                                colMap = testMap;
+                                break;
+                            }
+                        }
+
+                        if (headerRowIdx === -1) {
+                            headerRowIdx = 0;
+                            colMap = {
+                                seq: 0,
+                                name: 1,
+                                code: 2,
+                                university: 3,
+                                college: 4,
+                                department: 5,
+                                sector: 6,
+                                studyType: 7,
+                                gender: 8,
+                                school1: 9,
+                                school2: 10,
+                                school3: 11
+                            };
+                        }
+
+                        for (let r = headerRowIdx + 1; r < rows.length; r++) {
+                            const row = rows[r];
+                            if (!row || !row.length) continue;
+
+                            const name = String(row[colMap.name] || '').trim();
+                            if (!name || name === 'الاسم' || name === 'الاسم الثلاثي' || name.startsWith('#')) continue;
+
+                            let code = String(row[colMap.code] || '').trim();
+                            if (!code) {
+                                code = String(Math.floor(100000 + Math.random() * 900000));
+                            }
+
+                            const university = (String(row[colMap.university] || '').trim()) || sheetUniv || 'غير محدد';
+                            const college = (String(row[colMap.college] || '').trim()) || sheetCol || 'غير محدد';
+                            const department = String(row[colMap.department] || '').trim();
+                            const sector = String(row[colMap.sector] || '').trim();
+                            const studyType = String(row[colMap.studyType] || '').trim() || 'صباحي';
+                            const gender = String(row[colMap.gender] || '').trim();
+                            const school1Name = String(row[colMap.school1] || '').trim();
+                            const school2Name = String(row[colMap.school2] || '').trim();
+                            const school3Name = String(row[colMap.school3] || '').trim();
+
+                            extractedStudents.push({
+                                name,
+                                code,
+                                university,
+                                college,
+                                department,
+                                sector,
+                                studyType,
+                                gender,
+                                school1Code: '',
+                                school1Name,
+                                school2Code: '',
+                                school2Name,
+                                school3Code: '',
+                                school3Name,
+                                addedBy: 'excel_import',
+                                timestamp: new Date().toISOString()
+                            });
+                        }
+                    });
+
+                    if (!extractedStudents.length) {
+                        alert('⚠️ لم يتم العثور على أي بيانات مطبقين صالحة في ملف الإكسيل.\nيرجى التأكد من أن الملف يحتوي على أعمدة الأسماء والجامعات.');
+                        return;
+                    }
+
+                    pendingImportStudents = extractedStudents;
+                    showExcelImportModal(file.name, extractedStudents);
+
+                } catch (err) {
+                    console.error('Error reading Excel file:', err);
+                    alert('حدث خطأ أثناء قراءة ملف الإكسيل: ' + err.message);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function mapExcelHeaders(row) {
+            const map = {};
+            row.forEach((cell, idx) => {
+                const txt = String(cell || '').trim().toLowerCase();
+                if (!txt) return;
+
+                if (map.name === undefined && (txt.includes('الاسم') || txt.includes('اسم الطالب') || txt === 'name' || txt.includes('اسم الثلاثي') || txt.includes('اسم المطبق'))) {
+                    if (!txt.includes('مدرسة') && !txt.includes('جامعة') && !txt.includes('كلية')) {
+                        map.name = idx;
+                    }
+                } else if (map.code === undefined && (txt.includes('كود') || txt.includes('code') || txt.includes('رقم الطالب'))) {
+                    map.code = idx;
+                } else if (map.university === undefined && (txt.includes('جامعة') || txt.includes('university') || txt.includes('univ'))) {
+                    map.university = idx;
+                } else if (map.college === undefined && (txt.includes('كلية') || txt.includes('college') || txt.includes('faculty'))) {
+                    map.college = idx;
+                } else if (map.department === undefined && (txt.includes('قسم') || txt.includes('department') || txt.includes('dept') || txt.includes('فرع') || txt.includes('اختصاص'))) {
+                    map.department = idx;
+                } else if (map.sector === undefined && (txt.includes('قطاع') || txt.includes('sector'))) {
+                    map.sector = idx;
+                } else if (map.studyType === undefined && (txt.includes('دراسة') || txt.includes('نوع الدراسة') || txt.includes('study'))) {
+                    map.studyType = idx;
+                } else if (map.gender === undefined && (txt.includes('جنس') || txt.includes('gender') || txt.includes('نوع'))) {
+                    map.gender = idx;
+                } else if (map.school1 === undefined && (txt.includes('الاول') || txt.includes('الأول') || txt.includes('خيار 1') || txt.includes('رغبة 1') || txt.includes('مدرسة 1') || txt.includes('مدرسة اولى'))) {
+                    map.school1 = idx;
+                } else if (map.school2 === undefined && (txt.includes('الثاني') || txt.includes('خيار 2') || txt.includes('رغبة 2') || txt.includes('مدرسة 2') || txt.includes('مدرسة ثانية'))) {
+                    map.school2 = idx;
+                } else if (map.school3 === undefined && (txt.includes('الثالث') || txt.includes('خيار 3') || txt.includes('رغبة 3') || txt.includes('مدرسة 3') || txt.includes('مدرسة ثالثة'))) {
+                    map.school3 = idx;
+                } else if (map.seq === undefined && (txt === '#' || txt.includes('ت') || txt.includes('تسلسل'))) {
+                    map.seq = idx;
+                }
+            });
+            return map;
+        }
+
+        function showExcelImportModal(fileName, students) {
+            const overlay = document.getElementById('excel-import-overlay');
+            if (!overlay) return;
+
+            const collegeSummary = {};
+            students.forEach(st => {
+                const key = `${st.university} - ${st.college}`;
+                collegeSummary[key] = (collegeSummary[key] || 0) + 1;
+            });
+
+            const summaryListHtml = Object.entries(collegeSummary)
+                .map(([colName, count]) => `<span style="display:inline-block; background:#e8f4fd; color:#003366; padding:4px 10px; border-radius:20px; font-size:0.85rem; margin:3px; border:1px solid #bce0fd;">🏫 <strong>${escapeXml(colName)}:</strong> ${count} طالب</span>`)
+                .join('');
+
+            const previewRows = students.slice(0, 5).map((st, i) => `
+                <tr>
+                    <td style="padding:5px;">${i + 1}</td>
+                    <td style="padding:5px;"><strong>${escapeXml(st.name)}</strong></td>
+                    <td style="padding:5px;">${escapeXml(st.code)}</td>
+                    <td style="padding:5px;">${escapeXml(st.university)}</td>
+                    <td style="padding:5px;">${escapeXml(st.college)}</td>
+                    <td style="padding:5px;">${escapeXml(st.department)}</td>
+                    <td style="padding:5px;">${escapeXml(st.sector || '-')}</td>
+                    <td style="padding:5px;">${escapeXml(st.studyType || '-')}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('import-file-name').textContent = fileName;
+            document.getElementById('import-total-count').textContent = students.length;
+            document.getElementById('import-colleges-count').textContent = Object.keys(collegeSummary).length;
+            document.getElementById('import-colleges-summary').innerHTML = summaryListHtml;
+            document.getElementById('import-preview-body').innerHTML = previewRows;
+
+            const modalStatus = document.getElementById('import-modal-status');
+            if (modalStatus) modalStatus.style.display = 'none';
+
+            overlay.style.display = 'flex';
+        }
+
+        function closeExcelImportModal() {
+            const overlay = document.getElementById('excel-import-overlay');
+            if (overlay) overlay.style.display = 'none';
+            pendingImportStudents = [];
+        }
+
+        async function confirmExcelImport(mode) {
+            if (!pendingImportStudents || !pendingImportStudents.length) {
+                alert('لا توجد بيانات للاستيراد');
+                return;
+            }
+
+            const modalStatus = document.getElementById('import-modal-status');
+            const actionBtns = document.getElementById('import-action-buttons');
+            if (modalStatus) {
+                modalStatus.style.display = 'block';
+                modalStatus.innerHTML = '<span style="color:var(--primary-blue); font-weight:bold;">جاري حفظ البيانات في قاعدة البيانات وفرزها... ⏳</span>';
+            }
+            if (actionBtns) actionBtns.style.pointerEvents = 'none';
+
+            try {
+                let finalStudents = [];
+                if (mode === 'append') {
+                    const current = JSON.parse(localStorage.getItem('students')) || [];
+                    const existingCodes = new Set(current.map(c => String(c.code)));
+                    pendingImportStudents.forEach(st => {
+                        if (existingCodes.has(String(st.code))) {
+                            st.code = String(Math.floor(100000 + Math.random() * 900000));
+                        }
+                    });
+                    finalStudents = current.concat(pendingImportStudents);
+                } else {
+                    finalStudents = [...pendingImportStudents];
+                }
+
+                // فرز السجلات حسب الجامعة ثم الكلية ثم القسم ثم الاسم
+                finalStudents.sort((a, b) => {
+                    const uComp = (a.university || '').localeCompare(b.university || '', 'ar');
+                    if (uComp !== 0) return uComp;
+                    const cComp = (a.college || '').localeCompare(b.college || '', 'ar');
+                    if (cComp !== 0) return cComp;
+                    const dComp = (a.department || '').localeCompare(b.department || '', 'ar');
+                    if (dComp !== 0) return dComp;
+                    return (a.name || '').localeCompare(b.name || '', 'ar');
+                });
+
+                // 1. التخزين المحلي
+                localStorage.setItem('students', JSON.stringify(finalStudents));
+
+                // 2. المزامنة مع Firebase
+                if (typeof db !== 'undefined' && db && db.ref) {
+                    try {
+                        if (mode === 'replace') {
+                            await db.ref('students').remove();
+                        }
+                        const updates = {};
+                        pendingImportStudents.forEach(st => {
+                            const newKey = db.ref('students').push().key;
+                            updates[`students/${newKey}`] = st;
+                        });
+                        await db.ref().update(updates);
+                    } catch (fbErr) {
+                        console.warn('Firebase bulk update error:', fbErr);
+                    }
+                }
+
+                // 3. تحديث جدول الإدارة
+                if (typeof loadAdminTable === 'function') {
+                    await loadAdminTable();
+                }
+
+                const importedCount = pendingImportStudents.length;
+                closeExcelImportModal();
+                alert(`✓ تم بنجاح استيراد (${importedCount}) طالب وفرزهم حسب الجامعة والكلية!`);
+            } catch (err) {
+                console.error('Error during import saving:', err);
+                alert('حدث خطأ أثناء حفظ البيانات المستوردة: ' + err.message);
+            } finally {
+                if (actionBtns) actionBtns.style.pointerEvents = '';
+                if (modalStatus) modalStatus.style.display = 'none';
+            }
+        }
+
         function exportToWord() {
             const table = document.getElementById("admin-table");
             const html = `
@@ -2594,6 +3174,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="xlsx.full.min.js"></script>
 
     <script>
         // --- Firebase Integration ---
@@ -2677,6 +3258,17 @@
             if (students.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="12" style="text-align:center; padding: 2rem;">لا توجد بيانات مسجلة حالياً</td></tr>';
             } else {
+                // فرز السجلات حسب الجامعة ثم الكلية ثم القسم ثم الاسم
+                students.sort((a, b) => {
+                    const uComp = (a.university || '').localeCompare(b.university || '', 'ar');
+                    if (uComp !== 0) return uComp;
+                    const cComp = (a.college || '').localeCompare(b.college || '', 'ar');
+                    if (cComp !== 0) return cComp;
+                    const dComp = (a.department || '').localeCompare(b.department || '', 'ar');
+                    if (dComp !== 0) return dComp;
+                    return (a.name || '').localeCompare(b.name || '', 'ar');
+                });
+
                 students.forEach((s, i) => {
                     tbody.innerHTML += `<tr><td>${i + 1}</td><td>${s.name}</td><td>${s.code}</td><td>${s.university}</td><td>${s.college}</td><td>${s.department}</td><td>${s.sector}</td><td>${s.studyType}</td><td>${s.gender}</td><td>${s.school1Name}</td><td>${s.school2Name}</td><td>${s.school3Name}</td></tr>`;
                 });
@@ -2723,19 +3315,47 @@
         }
 
         window.exportDatesToExcel = function () {
-            const tbody = document.querySelector('#admin-dates-table tbody');
-            let csv = '\uFEFF#,اسم المدرسة,اسم الطالب الرباعي,الجامعة,الكلية,القسم,نوع الدراسة,تاريخ المباشرة,تاريخ الانفكاك\n';
-            Array.from(tbody.rows).forEach(row => {
-                if (row.cells.length < 9) return;
-                const rowData = Array.from(row.cells).map(c => `"${c.textContent.replace(/"/g, '""')}"`);
-                csv += rowData.join(',') + '\n';
+            const records = [];
+            const bodyRows = document.querySelectorAll('#admin-dates-table tbody tr');
+            bodyRows.forEach(tr => {
+                const tds = Array.from(tr.querySelectorAll('td')).map(td => td.textContent.trim());
+                if (tds.length >= 8 && !tds[0].includes('جاري') && !tds[0].includes('لا توجد') && !tds[0].includes('حدث خطأ')) {
+                    records.push({
+                        schoolName: tds[1] || '',
+                        studentName: tds[2] || '',
+                        university: tds[3] || '',
+                        college: tds[4] || '',
+                        department: tds[5] || '',
+                        studyType: tds[6] || '',
+                        startDate: tds[7] || '',
+                        endDate: tds[8] || ''
+                    });
+                }
             });
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'جدول_المباشرة_والانفكاك_المجمع.csv';
-            link.click();
-        }
+
+            if (!records.length) {
+                alert('لا توجد بيانات تواريخ متاحة للتصدير');
+                return;
+            }
+
+            const headers = ['#', 'اسم المدرسة', 'اسم الطالب الرباعي', 'الجامعة', 'الكلية', 'القسم', 'نوع الدراسة', 'تاريخ المباشرة', 'تاريخ الانفكاك'];
+            exportGroupedByUnivCollege(
+                records,
+                headers,
+                (r, idx) => [
+                    idx + 1,
+                    r.schoolName || '',
+                    r.studentName || '',
+                    r.university || '',
+                    r.college || '',
+                    r.department || '',
+                    r.studyType || '',
+                    r.startDate || '',
+                    r.endDate || ''
+                ],
+                'جدول_المباشرة_والانفكاك_مفروز_حسب_الجامعة_والكلية'
+            );
+        };
 
         window.clearDatesData = async function () {
             if (confirm('هل أنت متأكد من مسح جميع التواريخ المرسلة من المدارس بشكل نهائي؟')) {
@@ -2928,16 +3548,50 @@
         };
 
         window.exportStatsToExcel = function () {
-            let csv = '\uFEFF#,كود الطالب,اسم الطالب الثلاثي,الجامعة,الكلية,القسم,المدرسة التي طبق بها,تاريخ المباشرة,تاريخ الانفكاك\n';
-            allStatsData.forEach((item, index) => {
-                const clean = (str) => `"${(str || '').replace(/"/g, '""')}"`;
-                csv += `${index + 1},${clean(item.code)},${clean(item.name)},${clean(item.university)},${clean(item.college)},${clean(item.department)},${clean(item.school)},${clean(item.startDate)},${clean(item.endDate)}\n`;
-            });
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'احصائية_المطبقين_والمباشرة_والانفكاك.csv';
-            link.click();
+            let stats = [];
+            if (typeof allStatsData !== 'undefined' && Array.isArray(allStatsData) && allStatsData.length > 0) {
+                stats = allStatsData;
+            } else {
+                const bodyRows = document.querySelectorAll('#admin-stats-table tbody tr');
+                bodyRows.forEach(tr => {
+                    const tds = Array.from(tr.querySelectorAll('td')).map(td => td.textContent.trim());
+                    if (tds.length >= 8 && !tds[0].includes('جاري') && !tds[0].includes('لا توجد')) {
+                        stats.push({
+                            code: tds[1] || '',
+                            name: tds[2] || '',
+                            university: tds[3] || '',
+                            college: tds[4] || '',
+                            department: tds[5] || '',
+                            school: tds[6] || '',
+                            startDate: tds[7] || '',
+                            endDate: tds[8] || ''
+                        });
+                    }
+                });
+            }
+
+            if (!stats.length) {
+                alert('لا توجد إحصائية متاحة للتصدير');
+                return;
+            }
+
+            const headers = ['#', 'كود الطالب', 'اسم الطالب الثلاثي', 'الجامعة', 'الكلية', 'القسم', 'المدرسة التي طبق بها', 'تاريخ المباشرة', 'تاريخ الانفكاك'];
+            exportGroupedByUnivCollege(
+                stats,
+                headers,
+                (item, idx) => [
+                    idx + 1,
+                    item.code ? String(item.code) : '',
+                    item.name || '',
+                    item.university || '',
+                    item.college || '',
+                    item.department || '',
+                    item.school || '',
+                    item.startDate || '',
+                    item.endDate || ''
+                ],
+                'احصائية_المطبقين_مفروزة_حسب_الجامعة_والكلية'
+            );
         };
 
         window.printStatsTable = function () {
