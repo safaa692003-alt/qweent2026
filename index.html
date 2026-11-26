@@ -1639,6 +1639,7 @@
             { code: 'B152', name: 'أعدادية أم سلمة للبنات', sector: 'السماوة', list: '2' }, { code: 'B153', name: 'اعدادية خولة بنت الحسين (ع) للبنات', sector: 'السماوة', list: '2' },
             { code: 'B154', name: 'اعدادية نهج البلاغة للبنين', sector: 'السماوة', list: '2' }, { code: 'B155', name: 'الاعدادية المركزية', sector: 'السماوة', list: '2' },
             { code: 'B156', name: 'الاعدادية المهدوية للبنين', sector: 'السماوة', list: '2' }, { code: 'B157', name: 'معهد الفنون الجميلة', sector: 'السماوة', list: '2' },
+            { code: 'B300', name: 'متوسطة يحيى السماوي', sector: 'السماوة', list: '2' },
             // الرميثة 1
             { code: 'A001', name: 'اطفال الرميثة', sector: 'الرميثة', list: '1' }, { code: 'A002', name: 'الحنان النوذجية', sector: 'الرميثة', list: '1' },
             { code: 'A003', name: 'الشقائق', sector: 'الرميثة', list: '1' }, { code: 'A004', name: 'الوان', sector: 'الرميثة', list: '1' },
@@ -1971,7 +1972,8 @@
             ],
             other: [
                 "اللغة العربية", "اللغة الانكليزية", "التاريخ", "الجغرافيا",
-                "علوم قران", "علوم الحياة", "الرياضيات", "التربية الفنية", "تربية علوم رياضية"
+                "علوم قران", "علوم الحياة", "الرياضيات", "التربية الفنية", "تربية علوم رياضية",
+                "العلوم التربوية والنفسية"
             ]
         };
 
@@ -3698,44 +3700,8 @@
         // Initial background sync
         window.addEventListener('load', syncData);
         // ==========================================
-        // وظائف قسم ( اضافة مطبق ) في لوحة التحكم مع تطبيق قاعدة الاستيعاب (4 لكل مادة ماعدا الإنكليزي 5)
+        // وظائف قسم ( اضافة مطبق ) في لوحة التحكم (بدون شرط الطاقة الاستيعابية 4 أو 5)
         // ==========================================
-        function getNormalizedDepartment(dept) {
-            if (!dept) return "";
-            let d = dept.trim();
-            d = d.replace(/\s*-\s*اساسية/g, '');
-            d = d.replace(/\s*-\s*الاساسية/g, '');
-            d = d.replace(/\s*-\s*اساسيه/g, '');
-            d = d.replace(/\s*-\s*الاساسيه/g, '');
-            d = d.replace(/^قسم\s+/, '');
-            if (d === "الانكليزي" || d === "اللغة الانكليزية" || d === "الإنكليزي" || d === "اللغة الإنكليزية") {
-                return "اللغة الانكليزية";
-            }
-            return d;
-        }
-
-        function getMaxCapacityPerSchool(student) {
-            if (!student) return 4;
-            const dept = getNormalizedDepartment(student.department || '');
-            if (dept === 'اللغة الانكليزية') {
-                return 5;
-            }
-            return 4;
-        }
-
-        function checkSchoolAvailability(schoolCode, student, students) {
-            const currentDept = getNormalizedDepartment(student?.department || '');
-            const matchedStudents = (students || []).filter(st => {
-                if (getNormalizedDepartment(st.department) !== currentDept) return false;
-                return st.school1Code === schoolCode;
-            });
-            const maxCapacity = getMaxCapacityPerSchool(student);
-            if (matchedStudents.length >= maxCapacity) {
-                return { available: false, reason: 'full', count: matchedStudents.length, maxCapacity: maxCapacity };
-            }
-            return { available: true, count: matchedStudents.length, maxCapacity: maxCapacity };
-        }
-
         function adminToggleOtherUniversity() {
             const uSel = document.getElementById('admin-student-university');
             const oGrp = document.getElementById('admin-other-univ-group');
@@ -3769,7 +3735,8 @@
                 ],
                 other: [
                     "اللغة العربية", "اللغة الانكليزية", "التاريخ", "الجغرافيا",
-                    "علوم قران", "علوم الحياة", "الرياضيات", "التربية الفنية", "تربية علوم رياضية"
+                    "علوم قران", "علوم الحياة", "الرياضيات", "التربية الفنية", "تربية علوم رياضية",
+                    "العلوم التربوية والنفسية"
                 ]
             };
 
@@ -3798,8 +3765,7 @@
                     const isSelectedElsewhere = (id !== 'admin-school-1' && s1 === val) ||
                                                 (id !== 'admin-school-2' && s2 === val) ||
                                                 (id !== 'admin-school-3' && s3 === val);
-                    const isFull = opt.dataset.full === 'true';
-                    opt.disabled = isFull || isSelectedElsewhere;
+                    opt.disabled = isSelectedElsewhere;
                 });
             });
         }
@@ -3822,8 +3788,6 @@
             }
 
             const schoolsDb = (typeof SCHOOLS_DB !== 'undefined' && Array.isArray(SCHOOLS_DB)) ? SCHOOLS_DB : (window.SCHOOLS_DB || []);
-            const students = JSON.parse(localStorage.getItem('students')) || [];
-            const tempStudent = { college, department: dept, sector };
             const normDept = getNormalizedDepartment(dept);
 
             [s1, s2, s3].forEach(sel => {
@@ -3846,22 +3810,7 @@
                     const opt = document.createElement('option');
                     opt.value = sch.code;
                     opt.dataset.name = sch.name;
-
-                    if (dept) {
-                        const availability = checkSchoolAvailability(sch.code, tempStudent, students);
-                        opt.textContent = `${sch.name} (${availability.count}/${availability.maxCapacity})`;
-                        if (!availability.available) {
-                            opt.disabled = true;
-                            opt.dataset.full = 'true';
-                            opt.className = 'school-full';
-                            opt.style.color = '#d32f2f';
-                            opt.style.backgroundColor = '#ffcdd2';
-                            opt.textContent = `✗ ${sch.name} (${availability.count}/${availability.maxCapacity} - مكتملة)`;
-                        }
-                    } else {
-                        opt.textContent = `${sch.name} (${sch.code})`;
-                    }
-
+                    opt.textContent = sch.name;
                     sel.appendChild(opt);
                 });
 
@@ -3927,26 +3876,8 @@
                 return;
             }
 
-            // التحقق من الطاقة الاستيعابية: 4 مطبقين لنفس المادة ما عدا اللغة الإنكليزية 5
             const students = JSON.parse(localStorage.getItem('students')) || [];
-            const tempStudent = { college, department, sector };
             const schoolsDb = (typeof SCHOOLS_DB !== 'undefined' && Array.isArray(SCHOOLS_DB)) ? SCHOOLS_DB : (window.SCHOOLS_DB || []);
-
-            const selectedChoices = [
-                { code: s1Code, label: 'الخيار الأول' },
-                { code: s2Code, label: 'الخيار الثاني' },
-                { code: s3Code, label: 'الخيار الثالث' }
-            ];
-
-            for (const item of selectedChoices) {
-                const availability = checkSchoolAvailability(item.code, tempStudent, students);
-                if (!availability.available) {
-                    const sch = schoolsDb.find(s => s.code === item.code);
-                    const schName = sch ? sch.name : item.code;
-                    showAddAlert(`عذراً، المدرسة "${schName}" المحددة في (${item.label}) مكتملة لقسم ${department} (${availability.count}/${availability.maxCapacity} مطبقين) ولا يمكن الاختيار منها.`);
-                    return;
-                }
-            }
 
             const s1Name = s1Sel?.selectedOptions[0]?.dataset.name || (s1Code ? schoolsDb.find(s => s.code === s1Code)?.name : '') || '';
             const s2Name = s2Sel?.selectedOptions[0]?.dataset.name || (s2Code ? schoolsDb.find(s => s.code === s2Code)?.name : '') || '';
